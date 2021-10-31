@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.tymeleaf.org">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <meta charset="UTF-8">
+    <title th:text="'Server ' + ${serverId}"></title>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+</head>
+<body>
+<h3 th:text="'Settings of ' + ${serverId} + ' server'"></h3>
+<hr>
+<table class="table table-bordered table-stripped">
+<thead class="thead-dark">
+<tr>
+    <th>Col1</th>
+    <th>Col2</th>
+    <th>Col3</th>
+</tr>
+</thead>
+    <tbody>
+    <tr th:each="testListEntity:${testList}">
+        <td th:text="${testListEntity.string1}"></td>
+        <td th:text="${testListEntity.string2}"></td>
+        <td th:text="${testListEntity.string3}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

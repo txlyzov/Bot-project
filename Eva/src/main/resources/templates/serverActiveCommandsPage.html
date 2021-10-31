@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.tymeleaf.org">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <meta charset="UTF-8">
+    <title th:text="'Server ' + ${server}"></title>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+
+</head>
+
+
+<link rel="shortcut icon" type="image/png" th:href="@{/images/icon.png}"/>
+
+
+<body>
+<h3 class="font-italic font-weight-light p-3 mb-2 bg-info text-white" th:text="'Active commands, ' + ${server} + ' server'"></h3>
+<p class="mb-0 ml-2" th:text="'Posting channel: ' + ${postingChannel} + '.'"></p>
+<p class="mb-0 ml-2" th:text="'For every update you need to refresh the page.'"></p>
+<p class="mb-0 ml-2" th:text="'Last page update was: ' + ${#temporals.format(lastUpdateTime, 'dd-MM-yyyy HH:mm:ss')} + '.'"></p>
+<hr>
+<p class="mb-0 ml-2" th:text="'Total commands: ' + ${activeCommandsSize} + '\\' +  ${activeCommandsMaxSize} + '.'"></p>
+<hr>
+<div class="m-2">
+    <table class="table table-bordered table-stripped">
+        <thead class="thead-dark">
+        <tr>
+            <th>Numerical Value</th>
+            <th>Command Type</th>
+            <th>Literal Value</th>
+            <th>Registration Time</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="activeCommandEntity:${activeCommands}">
+            <td th:text="${activeCommandEntity.numericalValue}"></td>
+            <td th:text="${activeCommandEntity.commandType}"></td>
+            <td th:text="${activeCommandEntity.literalValue}"></td>
+            <td th:text="${activeCommandEntity.registrationTime}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
