@@ -1,8 +1,11 @@
 package com.bot.Eva.connections.websockets.zkb_websocket;
 
 
+import com.bot.Eva.connections.api.esi_evetech_api.EsiEvetechApi;
+import com.bot.Eva.connections.api.zkb_api.ZKBApi;
 import com.bot.Eva.connections.websockets.zkb_websocket.parsers.ZKBWebsocketParser;
 import com.bot.Eva.discord.DiscordApiValue;
+import com.bot.Eva.discord.servises.MessagingServises;
 import com.bot.Eva.models.DatabaseService;
 import com.bot.Eva.utils.debugs.ConsoleDebugs;
 import lombok.Getter;
@@ -22,14 +25,15 @@ public class ZKBWebSocketsServices {
     private static final int OPTIMIZED_LOGS_TIMER_RESTART_CYCLE_TIME = 3599950; // = ~60 min = 3599900 millis
     private static final int OPTIMIZED_LOGS_TIMER_PERIOD_CYCLE_TIME = 14950; // = 14.95 sec = 14950 millis
 
-    @Getter //3
+    @Getter
     private ZKBWebSocket webSocketSession;
     @Getter
-    private int killsCounter; //2
+    private int killsCounter;
     @Getter
-    private int sessionReconnects; //3
-
+    private int sessionReconnects;
+    @Getter
     private LocalDateTime connectionLostDate;
+
 
     @Autowired
     private ConsoleDebugs CD;
@@ -38,7 +42,13 @@ public class ZKBWebSocketsServices {
     @Autowired
     private ZKBWebsocketParser zkbWebsocketParser;
     @Autowired
+    private EsiEvetechApi esiEvetechApi;
+    @Autowired
+    private ZKBApi zkbApi;
+    @Autowired
     private DatabaseService databaseService;
+    @Autowired
+    private MessagingServises messagingServises;
 
 
 
@@ -122,8 +132,7 @@ public class ZKBWebSocketsServices {
             killsCounter = webSocketSession.getKillsCounter();
         }
         try {
-            this.webSocketSession =  new ZKBWebSocket(killsCounter,CD,discordApiValue,zkbWebsocketParser,databaseService);
-            webSocketSession.setKillsCounter(killsCounter);
+            this.webSocketSession =  new ZKBWebSocket(killsCounter,CD,discordApiValue,zkbWebsocketParser,esiEvetechApi,zkbApi,databaseService,messagingServises);
             switch (sessionReconnects) {
                 case 0 -> {
                 }

@@ -68,12 +68,14 @@ public class TestApiApplication {
 	public void app2(){
 		String ID = "/30001894/";
 		HttpClient httpClient = HttpClient.newHttpClient();
-		HttpRequest request = HttpRequest.newBuilder().uri(URI.create("https://zkillboard.com/api/stats/solarSystemID" + ID)).build();
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create("https://zkillboard.com/ship/26888/")).build();
+
+		//HttpRequest request = HttpRequest.newBuilder().uri(URI.create("https://zkillboard.com/api/stats/solarSystemID" + ID)).build();
 		//HttpRequest request = HttpRequest.newBuilder().uri(URI.create("https://jsonplaceholder.typicode.com/albums")).build();
 		//HttpRequest request = HttpRequest.newBuilder().uri(URI.create("https://zkillboard.com/api/stats/solarSystemID/30001894/")).build();
 		//HttpRequest request = HttpRequest.newBuilder().uri(URI.create("https://esi.evetech.net/latest/characters/2114533427/")).build();
 		httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-				.thenApply(HttpResponse::body).thenApply(TestApiApplication::parse2).join();//.thenAccept(System.out::println).join();
+				.thenApply(HttpResponse::body).thenAccept(System.out::println).join();//.thenApply(TestApiApplication::parse2).join();//.thenAccept(System.out::println).join();
 	}
 
 

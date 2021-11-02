@@ -75,6 +75,10 @@ public class ZKBWebsocketParser {
         return Integer.toString(new JSONObject(killstreamMessage).getInt("killmail_id"));
     }
 
+    public String killmailKillmailTimeParser(String killstreamMessage){
+        return new JSONObject(killstreamMessage).getString("killmail_time");
+    }
+
     public String killmailSolarSystemIdParser(String killstreamMessage){
         return Integer.toString(new JSONObject(killstreamMessage).getInt("solar_system_id"));
     }

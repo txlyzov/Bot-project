@@ -13,6 +13,7 @@ import java.net.http.HttpResponse;
 public class ZKBApi {
     private static final String MAIN_URI = "https://zkillboard.com/";
     private static final String SOLAR_SYSTEM_ENDING_URI = "api/stats/solarSystemID/";
+    private static final String SHIP_PAGE_URI = "ship/";
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private HttpRequest request;
@@ -23,5 +24,11 @@ public class ZKBApi {
         request = HttpRequest.newBuilder().uri(URI.create(MAIN_URI + SOLAR_SYSTEM_ENDING_URI + solarSystemId + "/")).build();
         return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::body).thenApply(zkbApiParsers::solarSystemNameParser).join();
+    }
+
+    public String getShipPage(String shipId){
+        request = HttpRequest.newBuilder().uri(URI.create(MAIN_URI + SHIP_PAGE_URI + shipId + "/")).build();
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(HttpResponse::body).thenApply(zkbApiParsers::htmlGetShipNameParser).join();
     }
 }

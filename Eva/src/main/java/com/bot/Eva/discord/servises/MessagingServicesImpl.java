@@ -9,19 +9,26 @@ import org.springframework.stereotype.Component;
 import java.awt.*;
 
 @Component
-public class MessagingServisesImpl implements MessagingServises {
+public class MessagingServicesImpl implements MessagingServises {
     @Override
-    public void sendMessage(MessageAuthor author, String title, String description, String footer, String thumbnail, TextChannel channel) {
+    public void sendDiscordEmbedMessage(String title, String description, String footer, String thumbnail, Color color, TextChannel textChannel) {
         int red = (int) Math.floor(Math.random() * 255);
         int green = (int) Math.floor(Math.random() * 255);
         int blue = (int) Math.floor(Math.random() * 255);
         new MessageBuilder().setEmbed(new EmbedBuilder()
-                .setAuthor(author)
+                        //.setAuthor(author)
+
+                //.addField("Field title", title)
                 .setTitle(title)
                 .setDescription(description)
                 .setFooter(footer)
                 .setThumbnail(thumbnail)
-                .setColor(new Color(red,green,blue)))
-                .send(channel);
+                .setColor(color))
+                //.setColor(new Color(red,green,blue)))
+                .send(textChannel);
+    }
+
+    public void sendBasicDiscordMessage(String messageContent,TextChannel textChannel){
+        new MessageBuilder().setContent(messageContent).send(textChannel);
     }
 }
