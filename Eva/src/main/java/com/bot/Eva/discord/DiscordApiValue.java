@@ -1,6 +1,8 @@
 package com.bot.Eva.discord;
 
 import com.bot.Eva.discord.listeners.add_tracking.AddTrackingListener;
+import com.bot.Eva.discord.listeners.delete_settings.ResetServerSettingsListener;
+import com.bot.Eva.discord.listeners.delete_tracking.DeleteTrackingListener;
 import com.bot.Eva.discord.listeners.set_posting_channel.SetPostingChannelListener;
 import com.bot.Eva.discord.listeners.test.TestListener;
 import com.bot.Eva.discord.listeners.eva_help.EvaHelpListener;
@@ -24,6 +26,10 @@ public class DiscordApiValue {
     private SetPostingChannelListener setPostingChannelListener;
     @Autowired
     private AddTrackingListener addTrackingListener;
+    @Autowired
+    private DeleteTrackingListener deleteTrackingListener;
+    @Autowired
+    private ResetServerSettingsListener resetServerSettingsListener;
 
 
     @Autowired
@@ -43,6 +49,8 @@ public class DiscordApiValue {
         api.addMessageCreateListener(evaHelpListener);
         api.addMessageCreateListener(setPostingChannelListener);
         api.addMessageCreateListener(addTrackingListener);
+        api.addMessageCreateListener(deleteTrackingListener);
+        api.addMessageCreateListener(resetServerSettingsListener);
     }
 
 

@@ -28,7 +28,7 @@ public class ZKBApiParsers {
             Pattern pattern = Pattern.compile("\"twitter:title\" content=\".+ \\|");
             Matcher matcher = pattern.matcher(htmlString);
             if (matcher.find()) {
-                return matcher.group(0).substring(25).replace(" |","").replace(" &#039;","'");
+                return matcher.group(0).substring(25).replace(" |","").replace("&#039;","'");
             }
         } catch (Exception e) {
             return "objectNotFoundException";

@@ -2,6 +2,7 @@ package com.bot.Eva.discord.listeners.add_tracking;
 
 import com.bot.Eva.connections.api.esi_evetech_api.EsiEvetechApi;
 import com.bot.Eva.connections.api.zkb_api.ZKBApi;
+import com.bot.Eva.discord.servises.MessagingServises;
 import com.bot.Eva.models.DatabaseService;
 import com.bot.Eva.models.active_commands.ActiveCommand;
 import com.bot.Eva.models.servers.Server;
@@ -22,6 +23,8 @@ public class AddTrackingListenerImpl implements AddTrackingListener {
     private EsiEvetechApi esiEvetechApi;
     @Autowired
     private ZKBApi zkbApi;
+    @Autowired
+    private MessagingServises messagingServises;
 
     //----------------------------------------------------------------------------------------------
     //Main function
@@ -35,7 +38,8 @@ public class AddTrackingListenerImpl implements AddTrackingListener {
         //If command correct
         Matcher correctMatcher = Pattern.compile("^`tr \\d{7,12}$").matcher(messageContent);
         while (correctMatcher.find()) {
-            isCorrectCommand = ifCorrectMatcherFound(messageCreateEvent,messageContent.substring(correctMatcher.start(), correctMatcher.end()).substring(4));
+            ifCorrectMatcherFound(messageCreateEvent,messageContent.substring(correctMatcher.start(), correctMatcher.end()).substring(4));
+            isCorrectCommand = true;
         }
 
         //Incorrect command prompt
@@ -56,17 +60,20 @@ public class AddTrackingListenerImpl implements AddTrackingListener {
 
 
     //If command correct
-    private boolean ifCorrectMatcherFound(MessageCreateEvent messageCreateEvent,String messageValue){
+    private void ifCorrectMatcherFound(MessageCreateEvent messageCreateEvent,String messageValue){
 
         long serverId = messageCreateEvent.getServer().get().getId();
         long channelId = messageCreateEvent.getChannel().getId();
 
         ActiveCommand command = databaseService.findActiveCommandByNumericalValue(messageValue);
         if(command!=null){
-            for(String serverCommand : databaseService.findByServerId(serverId).getActiveCommandIdsList()){
-                if (command.getId().equals(serverCommand)){
-                    ifFoundByNumericalValue(messageCreateEvent);
-                    return true;
+            Server server = databaseService.findByServerId(serverId);
+            if(server!=null){
+                for(String serverCommand : server.getActiveCommandIdsList()){
+                    if (command.getId().equals(serverCommand)){
+                        //Already tracking
+                        messagingServises.sendBasicDiscordMessage("Already tracking (⌐■_■)",messageCreateEvent.getChannel());
+                    }
                 }
             }
             //Start tracking
@@ -77,12 +84,6 @@ public class AddTrackingListenerImpl implements AddTrackingListener {
                     //Add ActiveCommand record
                     commandTypeDefining(messageValue,messageCreateEvent));
         }
-        return true;
-    }
-
-    //Already tracking
-    private void ifFoundByNumericalValue(MessageCreateEvent messageCreateEvent){
-        messageCreateEvent.getChannel().sendMessage("Already tracking (⌐■_■)");
     }
 
     //Start tracking?
@@ -97,21 +98,21 @@ public class AddTrackingListenerImpl implements AddTrackingListener {
             if (server != null) {
                 server.addActiveCommand(command.getId());
                 databaseService.addServer(server);
-                messageCreateEvent.getChannel().sendMessage("Starting observe "+ command.getLiteralValue() +
+                messagingServises.sendBasicDiscordMessage("Starting observe "+ command.getLiteralValue() +
                         " (id" + messageValue + ")! " +
                         "No one/Nothing will be unnoticed (almost). " +
-                        "\n(￣^￣)ゞ (⌐■_■)");
+                        "\n(￣^￣)ゞ (⌐■_■)",messageCreateEvent.getChannel());
             }
             //Server not exists in database
             else {
                 ArrayList<String> commandsList = new ArrayList<>();
                 commandsList.add(command.getId());
                 databaseService.addServer(new Server(serverId, channelId, commandsList));
-                messageCreateEvent.getChannel().sendMessage("Starting observe "+ command.getLiteralValue() +
+                messagingServises.sendBasicDiscordMessage("Starting observe "+ command.getLiteralValue() +
                         " (id" + messageValue + ")! " +
                         "No one/Nothing will be unnoticed (almost). " +
                         "\n(￣^￣)ゞ (⌐■_■)" +
-                        "\nAll bot activity will post in this channel. Use \\*\\`command\\* to change posting channel.");
+                        "\nAll bot activity will post in this channel. Use \\*\\`sp\\* to change posting channel.",messageCreateEvent.getChannel());
             }
         }
 
@@ -138,8 +139,8 @@ public class AddTrackingListenerImpl implements AddTrackingListener {
             //NPC corporation check (banned for antispam and saving resources)
             for (Object NPSCorporationId : esiEvetechApi.getNPSCorporationsIds()){
                 if (NPSCorporationId.toString().equals(messageValue)){
-                    messageCreateEvent.getChannel().sendMessage("Tracking NPS Corporation not allowed,don't litter my resources!" +
-                            "\n(╬ Ò﹏Ó)");
+                    messagingServises.sendBasicDiscordMessage("Tracking NPS Corporation not allowed,don't litter my resources!" +
+                            "\n(╬ Ò﹏Ó)",messageCreateEvent.getChannel());
                     return false;
                 }
             }
@@ -153,8 +154,10 @@ public class AddTrackingListenerImpl implements AddTrackingListener {
             return true;
         }
         //If global api search failed
-        messageCreateEvent.getChannel().sendMessage("Api services cant find any info about id" + messageValue + "." +
-                " If its new created id - wait for few days.\nOtherwise you can report this case additionally with (command).");
+        messagingServises.sendBasicDiscordMessage("Api services cant find any info about id"
+                + messageValue + "." +
+                " If its new created id - wait for few days.\n" +
+                "Otherwise you can report this case additionally with (command).",messageCreateEvent.getChannel());
         return false;
     }
 
@@ -162,6 +165,9 @@ public class AddTrackingListenerImpl implements AddTrackingListener {
 
     //Incorrect command prompt
     private void ifProbablyMatcherFound(MessageCreateEvent messageCreateEvent){
-        messageCreateEvent.getChannel().sendMessage("Command looks like \\`tr [number with 7-12 digits]. If you trying for it - check your input.\nExample: \\`tr 1234567.");
+        messagingServises.sendBasicDiscordMessage("" +
+                "Command looks like \\`tr [number with 7-12 digits]. " +
+                "If you trying for it - check your input.\nExample: \\`tr 1234567.",
+                messageCreateEvent.getChannel());
     }
 }
