@@ -422,7 +422,7 @@ public class ZKBWebSocket extends TextWebSocketHandler {
     private void rebuildPost(String messageContent, Server server, ArrayList<CommandIdsListPattern> commands, String killedShip){
         for (String commandId : server.getActiveCommandIdsList()){
 
-            Color color = new Color(1,1,1);
+            Color color = new Color(0,0,0);
             ArrayList<ActiveCommand> trackedAttackingAlliances = new ArrayList<>();
             ArrayList<ActiveCommand> trackedAttackingCorporations = new ArrayList<>();
             ArrayList<ActiveCommand> trackedAttackingCharacters = new ArrayList<>();
@@ -438,9 +438,9 @@ public class ZKBWebSocket extends TextWebSocketHandler {
                 if (commandId.equals(command.activeCommand.getId())){
                     switch (command.note) {
                         case "attacker" -> {
-                            if (new Color(1, 1, 1).equals(color) || new Color(148, 0, 211).equals(color)) {
+                            if (new Color(0, 0, 0).equals(color) || new Color(148, 0, 211).equals(color)) {
                                 color = new Color(255, 255, 255);
-                            } else if (new Color(0, 0, 0).equals(color)) {
+                            } else if (new Color(1, 1, 1).equals(color)) {
                                 color = new Color(220, 20, 60);
                             }
                             switch (command.activeCommand.getCommandType().substring(9)){
@@ -451,8 +451,8 @@ public class ZKBWebSocket extends TextWebSocketHandler {
                             }
                         }
                         case "killed" -> {
-                            if (new Color(1, 1, 1).equals(color) || new Color(148, 0, 211).equals(color)) {
-                                color = new Color(0, 0, 0);
+                            if (new Color(0, 0, 0).equals(color) || new Color(148, 0, 211).equals(color)) {
+                                color = new Color(1, 1, 1);
                             } else if (new Color(255, 255, 255).equals(color)) {
                                 color = new Color(220, 20, 60);
                             }
@@ -465,7 +465,7 @@ public class ZKBWebSocket extends TextWebSocketHandler {
                         }
                         case "solar" -> {
                             solarSystem = command.activeCommand;
-                            if (new Color(1, 1, 1).equals(color)) {
+                            if (new Color(0, 0, 0).equals(color)) {
                                 color = new Color(148, 0, 211);
                             }
                         }
@@ -529,11 +529,17 @@ public class ZKBWebSocket extends TextWebSocketHandler {
     }
 
     private String titleForPostPattern(String messageContent){
-        return "Energy anomaly detected!\n" +
-                "Seems source is the ship of "
-                + esiEvetechApi.getCharacterName(zkbWebsocketParser.killmailCharacterIdParser(
-                zkbWebsocketParser.killmailVictimObjectParser(messageContent).toString()))
-                + " (" + ZKB_KILL_URI + zkbWebsocketParser.killmailKillmailIdParser(messageContent) + "/)";
+        String characterId = zkbWebsocketParser.killmailCharacterIdParser(
+                zkbWebsocketParser.killmailVictimObjectParser(messageContent).toString());
+        String characterName = esiEvetechApi.getCharacterName(characterId);
+        if(characterName.equals("objectNotFoundException"))
+            return "Energy anomaly detected!\n" +
+                    "Source undetected." ;
+        else
+            return "Energy anomaly detected!\n" +
+                    "Seems source is the object of "
+                    + characterName
+                    + " (" + ZKB_KILL_URI + zkbWebsocketParser.killmailKillmailIdParser(messageContent) + "/)";
     }
 
     private String descriptionForPostPattern(String messageContent, ActiveCommand solarSystem,

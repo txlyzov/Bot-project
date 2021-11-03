@@ -68,7 +68,7 @@ public class TestApiApplication {
 	public void app2(){
 		String ID = "/30001894/";
 		HttpClient httpClient = HttpClient.newHttpClient();
-		HttpRequest request = HttpRequest.newBuilder().uri(URI.create("https://zkillboard.com/ship/26888/")).build();
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create("https://zkillboard.com/ship/33702/")).build();
 
 		//HttpRequest request = HttpRequest.newBuilder().uri(URI.create("https://zkillboard.com/api/stats/solarSystemID" + ID)).build();
 		//HttpRequest request = HttpRequest.newBuilder().uri(URI.create("https://jsonplaceholder.typicode.com/albums")).build();
