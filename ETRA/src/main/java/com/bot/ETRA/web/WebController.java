@@ -5,6 +5,7 @@ import com.bot.ETRA.models.DatabaseService;
 import com.bot.ETRA.models.active_commands.ActiveCommand;
 import com.bot.ETRA.models.servers.Server;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @Controller
-public class WebController {
+public class WebController implements ErrorController { //implements ErrorController need to move
     @Autowired
     private DiscordApiValue discordApiValue;
     @Autowired
@@ -28,6 +29,12 @@ public class WebController {
     public String main(Model model){
         model.addAttribute("someinfo","Someinfo here");
         return "main.html";
+    }
+
+    @RequestMapping(value = "/error")
+    public String handleError() {
+        //do something like logging
+        return "404";
     }
 
 
@@ -48,16 +55,7 @@ public class WebController {
             model.addAttribute("lastUpdateTime", LocalDateTime.now());
             return "ServerActiveCommandsPage";
         } catch (Exception e) {
-//            testList.add(new testClassForList("qwe","wer","ert"));
-//            testList.add(new testClassForList("asd","sdf","dfg"));
-//            testList.add(new testClassForList("zxc","xcv","cvb"));
-            model.addAttribute("server", "serverId not exist");
-            model.addAttribute("activeCommands", activeCommands);
-            model.addAttribute("activeCommandsSize", activeCommands.size());
-            model.addAttribute("activeCommandsMaxSize", "Unlimited");
-            model.addAttribute("lastUpdateTime", LocalDateTime.now());
-
-            return "ServerActiveCommandsPage";
+            return "404";
         }
 
     }
