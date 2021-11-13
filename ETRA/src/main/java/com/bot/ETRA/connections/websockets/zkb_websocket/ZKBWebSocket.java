@@ -37,6 +37,7 @@ public class ZKBWebSocket extends TextWebSocketHandler {
     //----------------------------------------------------------------------------------------------
     - optimize number of API requests
     - fix realization of getting Ship name(add normal HTML parser,not regex solution)
+    - connect looses
                                                                                                 */
 
 
@@ -127,7 +128,8 @@ public class ZKBWebSocket extends TextWebSocketHandler {
         this.connectionLostDate = null;
         this.lastMessageTime = LocalDateTime.now();
 
-        this.webSocketSession = new StandardWebSocketClient().doHandshake(this, new WebSocketHttpHeaders(), URI.create(ZKB_WEBSOCKET_LINK_URI)).get();
+        this.webSocketSession = new StandardWebSocketClient().doHandshake(this, new WebSocketHttpHeaders(),
+                URI.create(ZKB_WEBSOCKET_LINK_URI)).get();
         this.webSocketSession.sendMessage(new TextMessage(WEBSOCKET_FOLLOW_MESSAGE_KILLSTREAM));
         this.webSocketSession.sendMessage(new TextMessage(WEBSOCKET_FOLLOW_MESSAGE_PUBLIC));
 
@@ -383,9 +385,15 @@ public class ZKBWebSocket extends TextWebSocketHandler {
             if (commands.size()!=0){
                 //check all servers for follows
                 for (Server server : databaseService.getAllServers()) {
-                    rebuildPost(messageContent,server,commands,killedShip);
-                    //simplePost(messageContent,server,commands);
-
+                    //posts enabling
+                    if(server.getServerSettings().getPostsSettings().isShouldBePosted()){
+                        //posts pattern for server by its settings
+                        switch (server.getServerSettings().getPostsSettings().getPostsType()) {
+                            case "rebuilt" -> rebuiltPost(messageContent, server, commands, killedShip);
+                            case "simple" -> simplePost(messageContent, server, commands);
+                            default -> rebuiltPost(messageContent, server, commands, killedShip);
+                        }
+                    }
                 }
             }
 
@@ -416,12 +424,20 @@ public class ZKBWebSocket extends TextWebSocketHandler {
 
 
     //rebuilded bot posts with follow enumeration
-    private void rebuildPost(String messageContent, Server server, ArrayList<CommandIdsListPattern> commands, String killedShip){
+    private void rebuiltPost(String messageContent, Server server, ArrayList<CommandIdsListPattern> commands, String killedShip){
 
         //prepare for start
 
+        //selecting color preset for posts by server setting
+        COLOR_PRESET colorPreset;
+        switch (server.getServerSettings().getPostsSettings().getPostsColorPattern()) {
+            case 1 -> colorPreset = COLOR_PRESET_1;
+            case 2 -> colorPreset = COLOR_PRESET_2;
+            case 3 -> colorPreset = COLOR_PRESET_3;
+            default -> colorPreset = COLOR_PRESET_1;
+        }
         //black rgb 0-0-0 breaks in discord,so its just temp value
-        Color color = COLOR_PRESET_1.NULL_COLOR;
+        Color color = colorPreset.NULL_COLOR;
         //arrays for sorted attackers output
         ArrayList<ActiveCommand> trackedAttackingAlliances = new ArrayList<>();
         ArrayList<ActiveCommand> trackedAttackingCorporations = new ArrayList<>();
@@ -445,12 +461,12 @@ public class ZKBWebSocket extends TextWebSocketHandler {
                     switch (command.note) {
                         case "attacker" -> {
                             //if No color(0-0-0) or Solar system color -> change to Positive color
-                            if (COLOR_PRESET_1.NULL_COLOR.equals(color) || COLOR_PRESET_1.SOLAR_SYSTEM_COLOR.equals(color)) {
-                                color = COLOR_PRESET_1.POSITIVE_COLOR;
+                            if (colorPreset.NULL_COLOR.equals(color) || colorPreset.SOLAR_SYSTEM_COLOR.equals(color)) {
+                                color = colorPreset.POSITIVE_COLOR;
                             } else
                                 //if Negative color -> change to Neutral color
-                                if (COLOR_PRESET_1.NEGATIVE_COLOR.equals(color)) {
-                                color = COLOR_PRESET_1.NEUTRAL_COLOR;
+                                if (colorPreset.NEGATIVE_COLOR.equals(color)) {
+                                color = colorPreset.NEUTRAL_COLOR;
                             }
                             switch (command.activeCommand.getCommandType().substring(9)){
                                 case "alliance" -> trackedAttackingAlliances.add(command.activeCommand);
@@ -461,12 +477,12 @@ public class ZKBWebSocket extends TextWebSocketHandler {
                         }
                         case "killed" -> {
                             //if No color(0-0-0) or Solar system color -> change to Negative color
-                            if (COLOR_PRESET_1.NULL_COLOR.equals(color) || COLOR_PRESET_1.SOLAR_SYSTEM_COLOR.equals(color)) {
-                                color = COLOR_PRESET_1.NEGATIVE_COLOR;
+                            if (colorPreset.NULL_COLOR.equals(color) || colorPreset.SOLAR_SYSTEM_COLOR.equals(color)) {
+                                color = colorPreset.NEGATIVE_COLOR;
                             } else
                                 //if Positive color -> change to Neutral color
-                                if (COLOR_PRESET_1.POSITIVE_COLOR.equals(color)) {
-                                color = COLOR_PRESET_1.NEUTRAL_COLOR;
+                                if (colorPreset.POSITIVE_COLOR.equals(color)) {
+                                color = colorPreset.NEUTRAL_COLOR;
                             }
                             switch (command.activeCommand.getCommandType().substring(9)){
                                 case "alliance" -> trackedKilledAlliance = command.activeCommand;
@@ -478,8 +494,8 @@ public class ZKBWebSocket extends TextWebSocketHandler {
                         case "solar" -> {
                             solarSystem = command.activeCommand;
                             //if No color -> change to Solar system color
-                            if (COLOR_PRESET_1.NULL_COLOR.equals(color)) {
-                                color = COLOR_PRESET_1.SOLAR_SYSTEM_COLOR;
+                            if (colorPreset.NULL_COLOR.equals(color)) {
+                                color = colorPreset.SOLAR_SYSTEM_COLOR;
                             }
                         }
                     }

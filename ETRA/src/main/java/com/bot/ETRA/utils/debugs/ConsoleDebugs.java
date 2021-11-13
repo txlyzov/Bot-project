@@ -2,7 +2,7 @@ package com.bot.ETRA.utils.debugs;
 
 import com.bot.ETRA.connections.websockets.zkb_websocket.ZKBWebSocket;
 import com.bot.ETRA.connections.websockets.zkb_websocket.ZKBWebSocketsServices;
-import com.bot.ETRA.utils.consolePatterns.ConsoleLogPattern;
+import com.bot.ETRA.utils.console_patterns.ConsoleLogPattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;

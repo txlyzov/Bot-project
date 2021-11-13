@@ -23,12 +23,12 @@ public class EVEServerInfoService {
         records.add(new EVEServerInfo("ONLINE", "27,924","1,038"));
     }
 
-//    @PostConstruct
-//    public void init(){
-//        eveServerInfoRepository.deleteAll();
-//        eveServerInfoRepository.saveAll(records);
-//    }
-
+ /*   @PostConstruct
+    public void init(){
+        eveServerInfoRepository.deleteAll();
+        eveServerInfoRepository.saveAll(records);
+    }
+*/
     public List<EVEServerInfo> findAll(){
         return eveServerInfoRepository.findAll();
     }

@@ -1,5 +1,6 @@
 package com.bot.ETRA.models.servers;
 
+import com.bot.ETRA.models.servers.server_settings.ServerSettings;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -22,12 +23,16 @@ public class Server {
     private List<String> activeCommandIdsList;
     @Getter @Setter
     private String registrationTime;
+    @Getter @Setter
+    private ServerSettings serverSettings;
+
 
     public Server(long serverId, long channelId, List<String> activeCommandIdsList) {
         this.serverId = serverId;
         this.channelId = channelId;
         this.activeCommandIdsList = activeCommandIdsList;
         this.registrationTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN));
+        this.serverSettings = new ServerSettings();
     }
 
     public void addActiveCommand(String commandId){

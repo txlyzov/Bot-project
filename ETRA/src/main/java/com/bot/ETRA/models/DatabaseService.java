@@ -5,12 +5,11 @@ import com.bot.ETRA.models.active_commands.ActiveCommandRepository;
 import com.bot.ETRA.models.servers.Server;
 import com.bot.ETRA.models.servers.ServerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
-@Component
+@Service
 public class DatabaseService {
 
     @Autowired
@@ -21,7 +20,7 @@ public class DatabaseService {
 
 
     //Server Functions
-    public void addServer(Server server){serverRepository.save(server);}
+    public void saveServer(Server server){serverRepository.save(server);}
     public void deleteServer(Server server){serverRepository.delete(server);}
 
     public List<Server> getAllServers(){return serverRepository.findAll();}
@@ -31,11 +30,11 @@ public class DatabaseService {
 
 
     //ActiveCommands Functions
-    public void addActiveCommand(ActiveCommand activeCommand){activeCommandRepository.save(activeCommand);}
+    public void saveActiveCommand(ActiveCommand activeCommand){activeCommandRepository.save(activeCommand);}
     public void deleteActiveCommand(ActiveCommand activeCommand){activeCommandRepository.delete(activeCommand);}
 
     public List<ActiveCommand> getAllActiveCommands(){return activeCommandRepository.findAll();}
-    public Optional<ActiveCommand> findActiveCommandById(String id){return activeCommandRepository.findById(id);}
+    public ActiveCommand findActiveCommandById(String id){return activeCommandRepository.findById(id).orElseThrow();} //web controller and reset command use it
     public ActiveCommand findActiveCommandByNumericalValue(String value){return activeCommandRepository.findByNumericalValue(value);}
     public ActiveCommand findActiveCommandByLiteralValue(String value){return activeCommandRepository.findByLiteralValue(value);}
 

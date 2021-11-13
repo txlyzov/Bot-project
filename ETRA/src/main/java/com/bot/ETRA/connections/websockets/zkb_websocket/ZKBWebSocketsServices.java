@@ -11,13 +11,13 @@ import com.bot.ETRA.utils.debugs.ConsoleDebugs;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Timer;
 import java.util.TimerTask;
 
-@Component
+@Service
 public class ZKBWebSocketsServices {
 
     private static final int WS_CONNECTIONS_CHECK_CYCLE_TIME = 100; // = ~0,1 sec = 100 millis

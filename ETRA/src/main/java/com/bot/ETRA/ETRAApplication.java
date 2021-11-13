@@ -4,6 +4,7 @@ package com.bot.ETRA;
 
 import com.bot.ETRA.discord.DiscordApiValue;
 import com.bot.ETRA.connections.websockets.zkb_websocket.ZKBWebSocketsServices;
+import com.bot.ETRA.utils.support_and_test_tools.TestFeaturesEnabling;
 import com.bot.ETRA.utils.debugs.ConsoleDebugs;
 import lombok.SneakyThrows;
 import org.javacord.api.DiscordApi;
@@ -19,9 +20,11 @@ import java.time.LocalDateTime;
 
 @SpringBootApplication
 public class ETRAApplication {
+
+	@Autowired
+	private TestFeaturesEnabling testFeaturesEnabling;
 	@Autowired
 	private DiscordApiValue discordApiValue;
-
 	@Autowired
 	private Environment env;
 
@@ -49,6 +52,7 @@ public class ETRAApplication {
 		//----------------------------------------------------------------------------------------------
 
 
+
 		discordApiValue.setApi(new DiscordApiBuilder().setToken(env.getProperty("TOKEN"))
 				.setAllNonPrivilegedIntents()
 				.login()
@@ -56,9 +60,12 @@ public class ETRAApplication {
 		discordApiValue.addFeatures();
 
 
+
 		//----------------------------------------------------------------------------------------------
 		//WebSocket settings section
 		//----------------------------------------------------------------------------------------------
+
+
 
 		/*if(NICE_TIME_OUTPUT){
 			while (true){
@@ -80,6 +87,16 @@ public class ETRAApplication {
 				CD.evaApplicationConsoleDebugFinish11(LAUNCHING_TIME, zkbWebSocketsServices);
 			}
 		}));
+
+
+
+		//----------------------------------------------------------------------------------------------
+		//Test functions and changing connection
+		//----------------------------------------------------------------------------------------------
+
+
+
+		testFeaturesEnabling.testFeaturesEnabling();
 
 
 

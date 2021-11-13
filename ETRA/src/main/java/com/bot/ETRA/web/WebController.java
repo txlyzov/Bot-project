@@ -37,7 +37,7 @@ public class WebController {
             Server server = databaseService.findByServerId(serverId);
             //ArrayList<String> commandsIds = (ArrayList<String>) server.getActiveCommandIdsList();
             server.getActiveCommandIdsList().forEach((commandId) -> {
-                databaseService.findActiveCommandById(commandId).ifPresent(activeCommands::add);
+                activeCommands.add(databaseService.findActiveCommandById(commandId));
             });
 
             model.addAttribute("server", discordApiValue.getApi().getServerById(serverId).get().getName() + " (id" + serverId + ")");

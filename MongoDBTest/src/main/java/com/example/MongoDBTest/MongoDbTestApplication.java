@@ -22,6 +22,7 @@ public class MongoDbTestApplication {
 		val listOfServerInfo = testController.getListOfServerInfo();
 		for (int i = 0;i<listOfServerInfo.size();i++){
 			System.out.println((i+1) + ") " + listOfServerInfo.get(i).getTqStatus() + " " + listOfServerInfo.get(i).getTqOnline() + " " + listOfServerInfo.get(i).getTqKillsLastHour() );
+			System.out.println(listOfServerInfo.get(i).getClass2().v1());
 		}
 		//System.out.println(testController.getListOfServerInfo());
 	}
