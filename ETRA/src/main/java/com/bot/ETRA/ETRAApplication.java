@@ -58,6 +58,7 @@ public class ETRAApplication {
 				.login()
 				.join());
 		discordApiValue.addFeatures();
+		discordApiValue.addWIPFeatures();
 
 
 

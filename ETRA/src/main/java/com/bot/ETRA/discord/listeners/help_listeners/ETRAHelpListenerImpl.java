@@ -8,8 +8,7 @@ public class ETRAHelpListenerImpl implements ETRAHelpListener {
     @Override
     public void onMessageCreate(MessageCreateEvent messageCreateEvent) {
         if(messageCreateEvent.getMessageContent().equals("`help")){
-            messageCreateEvent.getChannel().sendMessage("http://localhost:404" +
-                    "\nHelp command description will be soon.");
+            messageCreateEvent.getChannel().sendMessage("http://localhost:404");
         }
     }
 }
