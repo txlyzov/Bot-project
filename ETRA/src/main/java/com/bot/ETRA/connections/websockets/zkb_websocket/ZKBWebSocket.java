@@ -15,6 +15,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import org.javacord.api.entity.message.MessageBuilder;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHttpHeaders;
@@ -76,12 +77,12 @@ public class ZKBWebSocket extends TextWebSocketHandler {
 
     //URI's
     private static final String ZKB_WEBSOCKET_LINK_URI = "wss://zkillboard.com/websocket/"; //websocket
-    private static final String ZKB_KILL_URI = "https://zkillboard.com/kill/"; //zkb links, kill
-    private static final String ZKB_SOLAR_SYSTEM_URI = "https://zkillboard.com/system/"; //zkb links, system
-    private static final String ZKB_SHIP_URI = "https://zkillboard.com/ship/"; //zkb links, ship
-    private static final String ZKB_CHARACTER_URI = "https://zkillboard.com/character/"; //zkb links,
-    private static final String ZKB_CORPORATION_URI = "https://zkillboard.com/corporation/"; //zkb links, corporation
-    private static final String ZKB_ALLIANCE_URI = "https://zkillboard.com/alliance/"; //zkb links, alliance
+    private static final String ZKB_KILL_URI = "https://zkillboard.com/kill/";
+    private static final String ZKB_SOLAR_SYSTEM_URI = "https://zkillboard.com/system/";
+    private static final String ZKB_SHIP_URI = "https://zkillboard.com/ship/";
+    private static final String ZKB_CHARACTER_URI = "https://zkillboard.com/character/";
+    private static final String ZKB_CORPORATION_URI = "https://zkillboard.com/corporation/";
+    private static final String ZKB_ALLIANCE_URI = "https://zkillboard.com/alliance/";
     private static final String SHIP_IMG_STARTING_URI = "https://images.evetech.net/types/"; //ship image starting
     private static final String SHIP_IMG_ENDING_URI = "/render"; //ship image ending
     //Follows message
@@ -91,11 +92,11 @@ public class ZKBWebSocket extends TextWebSocketHandler {
     //Services
     private ConsoleDebugs CD; //console debug
     private ZKBWebsocketParser zkbWebsocketParser; // parsing websocket messages
-    private EsiEvetechApi esiEvetechApi; // esi API
-    private ZKBApi zkbApi; //zkb Api
-    private DatabaseService databaseService; //database services
-    private DiscordApiValue discordApiValue; //discord connection
-    private MessagingServises messagingServises; //messages into discord
+    private EsiEvetechApi esiEvetechApi;
+    private ZKBApi zkbApi;
+    private DatabaseService databaseService;
+    private DiscordApiValue discordApiValue;
+    private MessagingServises messagingServises; //messages for discord
 
     //Values for console output
     @Getter @Setter
@@ -130,8 +131,8 @@ public class ZKBWebSocket extends TextWebSocketHandler {
 
         this.webSocketSession = new StandardWebSocketClient().doHandshake(this, new WebSocketHttpHeaders(),
                 URI.create(ZKB_WEBSOCKET_LINK_URI)).get();
-        /*this.webSocketSession.sendMessage(new TextMessage(WEBSOCKET_FOLLOW_MESSAGE_KILLSTREAM));
-        this.webSocketSession.sendMessage(new TextMessage(WEBSOCKET_FOLLOW_MESSAGE_PUBLIC));*/
+        this.webSocketSession.sendMessage(new TextMessage(WEBSOCKET_FOLLOW_MESSAGE_KILLSTREAM));
+        this.webSocketSession.sendMessage(new TextMessage(WEBSOCKET_FOLLOW_MESSAGE_PUBLIC));
 
     }
 
@@ -203,10 +204,7 @@ public class ZKBWebSocket extends TextWebSocketHandler {
                 for (Server server : databaseService.getAllServers()) {
                     new MessageBuilder().setContent("SERVER ONLINE").send(discordApiValue.getApi().getTextChannelById(server.getChannelId()).orElseThrow(IllegalStateException::new));
                 }
-            } /*else
-                    for (Server server : databaseService.getAllServers()) {
-                        new MessageBuilder().setContent("test alert").send(discordApiValue.getApi().getTextChannelById(server.getChannelId()).orElseThrow(IllegalStateException::new));
-                    }*/
+            }
         }
         lastServerChannelMessage = messageContent;
     }
@@ -226,15 +224,10 @@ public class ZKBWebSocket extends TextWebSocketHandler {
 
         //posts into discords availability
         if(ENABLING_DISCORD_POSTING){
-
-            //victim shipTypeId parser
             String killedShip = zkbWebsocketParser.killmailCharacterShipTypeIdParser(
-                    //victim character parser
                     zkbWebsocketParser.killmailVictimObjectParser(messageContent).toString());
 
-            //capsule reports availability
             if (!CAPSULES_REPORTS_AVAILABILITY){
-                //compare capsule id and victim player's ship id
                 if ((killedShip.equals("33328"))||(killedShip.equals("670"))){
                     return;
                 }
@@ -244,14 +237,26 @@ public class ZKBWebSocket extends TextWebSocketHandler {
             ArrayList<CommandIdsListPattern> commands = new ArrayList<>();
 
             JSONArray attackersArray = zkbWebsocketParser.killmailAttackersArrayParser(messageContent);
+            JSONObject victimPlayer = zkbWebsocketParser.killmailVictimObjectParser(messageContent);
 
             //for every active command in database check
             for (ActiveCommand activeCommand : databaseService.getAllActiveCommands()) {
+                String typeAC = activeCommand.getCommandType();
+                String idAC = activeCommand.getNumericalValue();
 
-                //check every attacker character
                 for(Object characterObject : attackersArray){
+                    checkActiveCommand(commands, activeCommand, "Tracking character",
+                            typeAC, idAC,
+                            "attacker",
+                            zkbWebsocketParser.killmailCharacterIdParser(characterObject.toString()));
+                    checkActiveCommand(commands, activeCommand, "Tracking corporation",
+                            typeAC, idAC,"attacker",
+                            zkbWebsocketParser.killmailCharacterCorporationIdParser(characterObject.toString()));
+                    checkActiveCommand(commands, activeCommand, "Tracking alliance",
+                            typeAC, idAC,"attacker",
+                            zkbWebsocketParser.killmailCharacterAllianceIdParser(characterObject.toString()));
 
-                    //if command's tracking type equals
+                    /*//if command's tracking type equals
                     if(activeCommand.getCommandType().equals("Tracking character")){
                         //command's tracking id equals
                         if(activeCommand.getNumericalValue().equals(
@@ -273,10 +278,10 @@ public class ZKBWebSocket extends TextWebSocketHandler {
                                         //parameter
                                         characterObject.toString()))){
                             //if Id equal and not already in list
-                            if((commands.size()==0)||(!commands.get(commands.size()-1).activeCommand().equals(activeCommand.getId()))){
+                            //if((commands.size()==0)||(!commands.get(commands.size()-1).activeCommand().equals(activeCommand.getId()))){
                                 //add to list of matching commands with notes
                                 commands.add(new CommandIdsListPattern(activeCommand, "attacker"));
-                            }
+                            //}
 
                         }
                     }
@@ -290,19 +295,31 @@ public class ZKBWebSocket extends TextWebSocketHandler {
                                         //parameter
                                         characterObject.toString()))){
                             //if Id equal and not already in list
-                            if((commands.size()==0)||(!commands.get(commands.size()-1).activeCommand().equals(activeCommand.getId()))){
+                            //if((commands.size()==0)||(!commands.get(commands.size()-1).activeCommand().equals(activeCommand.getId()))){
                                 //add to list of matching commands with notes
                                 commands.add(new CommandIdsListPattern(activeCommand, "attacker"));
-                            }
+                            //}
 
                         }
-                    }
+                    }*/
 
                 }
 
                 //check victim character
                 {
-                    //if command's tracking type equals
+
+                    checkActiveCommand(commands, activeCommand, "Tracking character",
+                            typeAC, idAC,
+                            "killed",
+                            zkbWebsocketParser.killmailCharacterIdParser(victimPlayer.toString()));
+                    checkActiveCommand(commands, activeCommand, "Tracking corporation",
+                            typeAC, idAC,"killed",
+                            zkbWebsocketParser.killmailCharacterCorporationIdParser(victimPlayer.toString()));
+                    checkActiveCommand(commands, activeCommand, "Tracking alliance",
+                            typeAC, idAC,"killed",
+                            zkbWebsocketParser.killmailCharacterAllianceIdParser(victimPlayer.toString()));
+
+                    /*//if command's tracking type equals
                     if(activeCommand.getCommandType().equals("Tracking character")){
                         //command's tracking id equals
                         if(activeCommand.getNumericalValue().equals(
@@ -313,10 +330,10 @@ public class ZKBWebSocket extends TextWebSocketHandler {
                                                 //parameter
                                                 messageContent).toString()))){
                             //if Id equal and not already in list
-                            if((commands.size()==0)||(!commands.get(commands.size()-1).activeCommand().equals(activeCommand.getId()))){
+                            //if((commands.size()==0)||(!commands.get(commands.size()-1).activeCommand().equals(activeCommand.getId()))){
                                 //add to list of matching commands with notes
                                 commands.add(new CommandIdsListPattern(activeCommand, "killed"));
-                            }
+                            //}
 
                         }
                     }
@@ -332,11 +349,10 @@ public class ZKBWebSocket extends TextWebSocketHandler {
                                                 //parameter
                                                 messageContent).toString()))){
                             //if Id equal and not already in list
-                            if((commands.size()==0)||(!commands.get(commands.size()-1).activeCommand().equals(activeCommand.getId()))){
+                            //if((commands.size()==0)||(!commands.get(commands.size()-1).activeCommand().equals(activeCommand.getId()))){
                                 //add to list of matching commands with notes
                                 commands.add(new CommandIdsListPattern(activeCommand, "killed"));
-                            }
-
+                            //}
                         }
                     }
 
@@ -351,17 +367,22 @@ public class ZKBWebSocket extends TextWebSocketHandler {
                                                 //parameter
                                                 messageContent).toString()))){
                             //if Id equal and not already in list
-                            if((commands.size()==0)||(!commands.get(commands.size()-1).activeCommand().equals(activeCommand.getId()))){
+                            //if((commands.size()==0)||(!commands.get(commands.size()-1).activeCommand().equals(activeCommand.getId()))){
                                 //add to list of matching commands with notes
                                 commands.add(new CommandIdsListPattern(activeCommand, "killed"));
-                            }
+                            //}
 
                         }
-                    }
+                    }*/
                 }
 
 
-                //if command's tracking type equals
+                checkActiveCommand(commands, activeCommand, "Tracking solar system",
+                        typeAC, idAC,
+                        "solar",
+                        zkbWebsocketParser.killmailSolarSystemIdParser(messageContent));
+
+                /*//if command's tracking type equals
                 if(activeCommand.getCommandType().equals("Tracking solar system")){
                     //command's tracking id equals
                     if(activeCommand.getNumericalValue().equals(
@@ -370,22 +391,20 @@ public class ZKBWebSocket extends TextWebSocketHandler {
                                     //parameter
                                     messageContent))){
                         //if Id equal and not already in list
-                        if((commands.size()==0)||(!commands.get(commands.size()-1).activeCommand().equals(activeCommand.getId()))){
+                        //if((commands.size()==0)||(!commands.get(commands.size()-1).activeCommand().equals(activeCommand.getId()))){
                             //add to list of matching commands with notes
                             commands.add(new CommandIdsListPattern(activeCommand, "solar"));
-                        }
+                        //}
 
                     }
-                }
+                }*/
 
 
             }
 
-            //if any command found do,else just skip
+            //work with commands
             if (commands.size()!=0){
-                //check all servers for follows
                 for (Server server : databaseService.getAllServers()) {
-                    //posts enabling
                     if(server.getServerSettings().getPostsSettings().isShouldBePosted()){
                         //posts pattern for server by its settings
                         switch (server.getServerSettings().getPostsSettings().getPostsType()) {
@@ -398,20 +417,25 @@ public class ZKBWebSocket extends TextWebSocketHandler {
             }
 
         }
+    }
 
-
-
-
-
+    //check active command and addition to input list if true
+    private ArrayList<CommandIdsListPattern> checkActiveCommand(ArrayList<CommandIdsListPattern> list,
+                                                                ActiveCommand activeCommand,
+                                                                String typeToCompare,String type, String id, String note, String parserResult){
+        if(type.equals(typeToCompare)){
+            if(id.equals(parserResult)){
+                list.add(new CommandIdsListPattern(activeCommand, note));
+                return list;
+            }
+        }
+        return list;
     }
 
     //simple link posting
     private void simplePost(String messageContent,Server server,ArrayList<CommandIdsListPattern> commands){
-        //check all server follows
         skipAndGoForNextServer: for (String commandId : server.getActiveCommandIdsList()){
-                        //check all ActiveCommands in the list
                         for (CommandIdsListPattern command : commands){
-                            //post link if Id equal
                             if (commandId.equals(command.activeCommand.getId())){
                                 messagingServises.sendBasicDiscordMessage("https://zkillboard.com/kill/" +
                                         zkbWebsocketParser.killmailKillmailIdParser(messageContent) + "/",discordApiValue.getApi().getTextChannelById(server.getChannelId()).orElseThrow(IllegalStateException::new));
@@ -423,10 +447,8 @@ public class ZKBWebSocket extends TextWebSocketHandler {
             }
 
 
-    //rebuilded bot posts with follow enumeration
+    //rebuilt bot posts with follow enumeration
     private void rebuiltPost(String messageContent, Server server, ArrayList<CommandIdsListPattern> commands, String killedShip){
-
-        //prepare for start
 
         //selecting color preset for posts by server setting
         COLOR_PRESET colorPreset;
@@ -443,28 +465,25 @@ public class ZKBWebSocket extends TextWebSocketHandler {
         ArrayList<ActiveCommand> trackedAttackingCorporations = new ArrayList<>();
         ArrayList<ActiveCommand> trackedAttackingCharacters = new ArrayList<>();
 
-        //arrays for sorted killed player info output
+        //variables for sorted killed player info output
         ActiveCommand trackedKilledAlliance = null;
         ActiveCommand trackedKilledCorporation = null;
         ActiveCommand trackedKilledCharacter = null;
         ActiveCommand solarSystem = null;
 
-        //at least one match is found mark
+        //goal - find one at least record for server
         boolean matched = false;
 
-        //check all server follows
+
         for (String commandId : server.getActiveCommandIdsList()){
-            //check all ActiveCommands with theirs notes
+            //check commands with notes and choose color for message
             for (CommandIdsListPattern command : commands){
-                //if equal set post color and add ActiveCommand to variable depends on note
                 if (commandId.equals(command.activeCommand.getId())){
                     switch (command.note) {
                         case "attacker" -> {
-                            //if No color(0-0-0) or Solar system color -> change to Positive color
                             if (colorPreset.NULL_COLOR.equals(color) || colorPreset.SOLAR_SYSTEM_COLOR.equals(color)) {
                                 color = colorPreset.POSITIVE_COLOR;
                             } else
-                                //if Negative color -> change to Neutral color
                                 if (colorPreset.NEGATIVE_COLOR.equals(color)) {
                                 color = colorPreset.NEUTRAL_COLOR;
                             }
@@ -476,11 +495,9 @@ public class ZKBWebSocket extends TextWebSocketHandler {
                             }
                         }
                         case "killed" -> {
-                            //if No color(0-0-0) or Solar system color -> change to Negative color
                             if (colorPreset.NULL_COLOR.equals(color) || colorPreset.SOLAR_SYSTEM_COLOR.equals(color)) {
                                 color = colorPreset.NEGATIVE_COLOR;
                             } else
-                                //if Positive color -> change to Neutral color
                                 if (colorPreset.POSITIVE_COLOR.equals(color)) {
                                 color = colorPreset.NEUTRAL_COLOR;
                             }
@@ -493,7 +510,6 @@ public class ZKBWebSocket extends TextWebSocketHandler {
                         }
                         case "solar" -> {
                             solarSystem = command.activeCommand;
-                            //if No color -> change to Solar system color
                             if (colorPreset.NULL_COLOR.equals(color)) {
                                 color = colorPreset.SOLAR_SYSTEM_COLOR;
                             }
@@ -506,9 +522,13 @@ public class ZKBWebSocket extends TextWebSocketHandler {
         }
 
 
-        //at least 1 matched
+
         if(matched){
-            //removing repetitions in attack arrays
+            checkAndRemoveDuplicates(trackedAttackingAlliances);
+            checkAndRemoveDuplicates(trackedAttackingCorporations);
+            checkAndRemoveDuplicates(trackedAttackingCharacters);
+
+            /*//removing repetitions in attack arrays
             if(trackedAttackingAlliances.size()>1){
                 int arrayOriginalListSize = trackedAttackingAlliances.size();
                 for (int record = arrayOriginalListSize-1;record>=1;record--){
@@ -546,22 +566,37 @@ public class ZKBWebSocket extends TextWebSocketHandler {
                         }
                     }
                 }
-            }
+            }*/
 
-            //construct title
             String title = titleForPostPattern(messageContent);
-            //construct description
             String description = descriptionForPostPattern(messageContent,solarSystem,
                     trackedAttackingAlliances,trackedAttackingCorporations,trackedAttackingCharacters,
                     trackedKilledAlliance,trackedKilledCorporation,trackedKilledCharacter);
 
-            //send Embed Discord message
+            //send embed Discord message
             messagingServises.sendDiscordEmbedMessage(title,description,
                     "waiting for others events..",
                     SHIP_IMG_STARTING_URI + killedShip + SHIP_IMG_ENDING_URI,color,
                     discordApiValue.getApi().getTextChannelById(server.getChannelId()).orElseThrow(IllegalStateException::new));
 
         }
+    }
+
+    //cleaning final post from duplicates
+    private ArrayList<ActiveCommand> checkAndRemoveDuplicates(ArrayList<ActiveCommand> list){
+        int arrayOriginalSize = list.size();
+        if(list.size()>1){
+            for (int record = arrayOriginalSize-1;record>=1;record--){
+                for (int recordForCompare = list.size()-2;recordForCompare>=0;recordForCompare--){
+                    if(list.get(record).getNumericalValue().equals(
+                            list.get(recordForCompare).getNumericalValue())){
+                        list.remove(record);
+                        break;
+                    }
+                }
+            }
+        }
+        return list;
     }
 
     //Title pattern of Embed discord message
@@ -571,7 +606,7 @@ public class ZKBWebSocket extends TextWebSocketHandler {
         String characterName = esiEvetechApi.getCharacterName(characterId);
         if(characterName.equals("objectNotFoundException"))
             return "Energy anomaly detected!\n" +
-                    "Source undetected." ;
+                    "Unknown source." ;
         else
             return "Energy anomaly detected!\n" +
                     "Seems source is the object of "
@@ -671,6 +706,42 @@ public class ZKBWebSocket extends TextWebSocketHandler {
         description += activeCommand.getNumericalValue() + "/)";
         return description;
     }
+
+
+
+
+    /*private boolean compareAndAddAC(int listSize,String type,String id,String parserResult){
+        if(type.equals("Tracking solar system")){
+            //command's tracking id equals
+            if(id.equals(parserResult)){
+                //if Id equal and not already in list
+                if((listSize==0)||(!list.get(commands.size()-1).activeCommand().equals(activeCommand.getId()))){
+                    //add to list of matching commands with notes
+                    list.add(new CommandIdsListPattern(activeCommand, "solar"));
+                    return true;
+                }
+
+            }
+        }
+        return false;
+    }*/
+
+    /*if(activeCommand.getCommandType().equals("Tracking corporation")){
+        //command's tracking id equals
+        if(activeCommand.getNumericalValue().equals(
+                //victim corporationId parser
+                zkbWebsocketParser.killmailCharacterCorporationIdParser(
+                        //victim parser
+                        zkbWebsocketParser.killmailVictimObjectParser(
+                                //parameter
+                                messageContent).toString()))){
+            //if Id equal and not already in list
+            if((commands.size()==0)||(!commands.get(commands.size()-1).activeCommand().equals(activeCommand.getId()))){
+                //add to list of matching commands with notes
+                commands.add(new CommandIdsListPattern(activeCommand, "killed"));
+            }
+        }
+    }*/
 
 
 }

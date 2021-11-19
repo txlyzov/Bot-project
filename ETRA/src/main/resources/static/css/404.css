@@ -1,9 +1,25 @@
 body{
-   background-color: #fff5ee;
+   /*background-color: #fff5ee;*/
+   background-image: url(https://media.discordapp.net/attachments/911035759325233183/911086135655145502/background.jpg);
+   background-repeat: no-repeat;
+   background-attachment: fixed;
+   background-size: cover;
+   overflow-x: hidden;
+   overflow-y: hidden;
+}
+
+.container{
+background-color: #fff5ee;
+border-left: #9400d3 4px solid;
+border-right: #9400d3 4px solid;
 }
 
 #header {
   border-bottom: #9400d3 4px solid;
+}
+
+.fill {
+    min-height: 100vh;
 }
 
 .err {
