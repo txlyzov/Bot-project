@@ -21,19 +21,19 @@ public class ResetServerSettingsPermissionListenerImpl implements ResetServerSet
     @Override
     public void onMessageCreate(MessageCreateEvent messageCreateEvent) {
         String messageContent = messageCreateEvent.getMessageContent();
-        Matcher correctMatcher = Pattern.compile("^`ResetServerSettingsPermissionListener ((true)|(false))$").matcher(messageContent);
+        Matcher correctMatcher = Pattern.compile("^`RSSP ((true)|(false))$").matcher(messageContent);
         while (correctMatcher.find()) {
             if(!messageCreateEvent.getMessageAuthor().isServerAdmin()){
                 messageCreateEvent.getChannel().sendMessage("**(!)** This command able only for \\`Server Admins\\`." +
                         "\n*Talk with them if you need that.*");
             } else {
                 String messageValue = messageContent.substring(correctMatcher.start(), correctMatcher.end())
-                        .substring(39);
+                        .substring(6);
                 long serverId = messageCreateEvent.getServer().get().getId();
                 Server server = databaseService.findByServerId(serverId);
                 server.getServerSettings().getEveryoneCommandsPermissions().setResetServerSettingsPermission(Boolean.parseBoolean(messageValue));
                 databaseService.saveServer(server);
-                messageCreateEvent.getChannel().sendMessage("ResetServerSettingsPermissionListener " + messageValue);
+                messageCreateEvent.getChannel().sendMessage("RSSP " + messageValue);
             }
 
         }

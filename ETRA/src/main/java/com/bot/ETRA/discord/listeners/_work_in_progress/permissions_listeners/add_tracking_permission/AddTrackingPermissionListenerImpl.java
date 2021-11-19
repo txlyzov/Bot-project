@@ -21,19 +21,19 @@ public class AddTrackingPermissionListenerImpl implements AddTrackingPermissionL
     @Override
     public void onMessageCreate(MessageCreateEvent messageCreateEvent) {
         String messageContent = messageCreateEvent.getMessageContent();
-        Matcher correctMatcher = Pattern.compile("^`AddTrackingPermissionListener ((true)|(false))$").matcher(messageContent);
+        Matcher correctMatcher = Pattern.compile("^`ATP ((true)|(false))$").matcher(messageContent);
         while (correctMatcher.find()) {
             if(!messageCreateEvent.getMessageAuthor().isServerAdmin()){
                 messageCreateEvent.getChannel().sendMessage("**(!)** This command able only for \\`Server Admins\\`." +
                         "\n*Talk with them if you need that.*");
             } else {
                 String messageValue = messageContent.substring(correctMatcher.start(), correctMatcher.end())
-                        .substring(31);
+                        .substring(5);
                 long serverId = messageCreateEvent.getServer().get().getId();
                 Server server = databaseService.findByServerId(serverId);
                 server.getServerSettings().getEveryoneCommandsPermissions().setAddTrackingCommandPermission(Boolean.parseBoolean(messageValue));
                 databaseService.saveServer(server);
-                messageCreateEvent.getChannel().sendMessage("AddTrackingPermissionListener " + messageValue);
+                messageCreateEvent.getChannel().sendMessage("ATP " + messageValue);
             }
 
         }

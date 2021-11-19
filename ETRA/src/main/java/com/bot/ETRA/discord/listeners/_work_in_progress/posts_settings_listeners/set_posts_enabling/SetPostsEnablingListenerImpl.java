@@ -22,19 +22,19 @@ public class SetPostsEnablingListenerImpl implements SetPostsEnablingListener{
     @Override
     public void onMessageCreate(MessageCreateEvent messageCreateEvent) {
         String messageContent = messageCreateEvent.getMessageContent();
-        Matcher correctMatcher = Pattern.compile("^`SetPostsEnabling ((true)|(false))$").matcher(messageContent);
+        Matcher correctMatcher = Pattern.compile("^`SPE ((true)|(false))$").matcher(messageContent);
         while (correctMatcher.find()) {
             if(!messageCreateEvent.getMessageAuthor().isServerAdmin()){
                 messageCreateEvent.getChannel().sendMessage("**(!)** This command able only for \\`Server Admins\\`." +
                         "\n*Talk with them if you need that.*");
             } else {
                 String messageValue = messageContent.substring(correctMatcher.start(), correctMatcher.end())
-                        .substring(18);
+                        .substring(5);
                 long serverId = messageCreateEvent.getServer().get().getId();
                 Server server = databaseService.findByServerId(serverId);
                 server.getServerSettings().getPostsSettings().setShouldBePosted(Boolean.parseBoolean(messageValue));
                 databaseService.saveServer(server);
-                messageCreateEvent.getChannel().sendMessage("SetPostsEnabling " + messageValue);
+                messageCreateEvent.getChannel().sendMessage("SPE " + messageValue);
             }
 
         }

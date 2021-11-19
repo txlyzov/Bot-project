@@ -20,7 +20,7 @@ public class ResetServerCustomSettingsListenerImpl implements ResetServerCustomS
 
     @Override
     public void onMessageCreate(MessageCreateEvent messageCreateEvent) {
-        if(messageCreateEvent.getMessageContent().equals("`ResetServerCustomSettingsListener")){
+        if(messageCreateEvent.getMessageContent().equals("`RSCS")){
             if(!messageCreateEvent.getMessageAuthor().isServerAdmin()){
                 messageCreateEvent.getChannel().sendMessage("**(!)** This command able only for \\`Server Admins\\`." +
                         "\n*Talk with them if you need that.*");
@@ -30,7 +30,7 @@ public class ResetServerCustomSettingsListenerImpl implements ResetServerCustomS
                     server.setServerSettings(new ServerSettings());
                     databaseService.saveServer(server);
                 }
-                messageCreateEvent.getChannel().sendMessage("ResetServerCustomSettingsListener done");
+                messageCreateEvent.getChannel().sendMessage("RSCS done");
             }
         }
     }

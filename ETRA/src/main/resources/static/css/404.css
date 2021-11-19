@@ -1,0 +1,27 @@
+body{
+   background-color: #fff5ee;
+}
+
+#header {
+  border-bottom: #9400d3 4px solid;
+}
+
+.err {
+  color: #171717;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 14rem;
+}
+
+/*@keyframes rotate {
+    from {transform:rotate(360deg);}
+    to {transform:rotate(0deg);}
+}
+
+img.rotation{
+  animation: rotate 1s linear 0s infinite;
+}*/
+
+.round {
+    border-radius: 100%;
+    border: 3px solid black;
+    }

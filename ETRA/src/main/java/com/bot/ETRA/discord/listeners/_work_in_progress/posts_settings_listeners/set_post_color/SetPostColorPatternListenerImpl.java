@@ -21,20 +21,20 @@ public class SetPostColorPatternListenerImpl implements SetPostColorPatternListe
     @Override
     public void onMessageCreate(MessageCreateEvent messageCreateEvent) {
         String messageContent = messageCreateEvent.getMessageContent();
-        Matcher correctMatcher = Pattern.compile("^`SetPostColorPattern [123]$").matcher(messageContent);
+        Matcher correctMatcher = Pattern.compile("^`SPCP [123]$").matcher(messageContent);
         while (correctMatcher.find()) {
             if(!messageCreateEvent.getMessageAuthor().isServerAdmin()){
                 messageCreateEvent.getChannel().sendMessage("**(!)** This command able only for \\`Server Admins\\`." +
                         "\n*Talk with them if you need that.*");
             } else {
                 String messageValue = messageContent.substring(correctMatcher.start(), correctMatcher.end())
-                        .substring(21);
+                        .substring(6);
                 long serverId = messageCreateEvent.getServer().get().getId();
                 Server server = databaseService.findByServerId(serverId);
                 server.getServerSettings().getPostsSettings().setPostsColorPattern(
                                 Integer.parseInt(messageValue));
                 databaseService.saveServer(server);
-                messageCreateEvent.getChannel().sendMessage("SetPostColorPattern " + messageValue);
+                messageCreateEvent.getChannel().sendMessage("SPCP " + messageValue);
             }
         }
     }

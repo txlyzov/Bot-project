@@ -91,28 +91,33 @@ public class DeleteTrackingListenerImpl implements DeleteTrackingListener {
         //list for updating
         ArrayList<String> commandsForUpdate = (ArrayList<String>) serverToUpdate.getActiveCommandIdsList();
         ActiveCommand commandForDelete = databaseService.findActiveCommandByNumericalValue(messageValue);
-        commandsForUpdate.remove(commandForDelete.getId());
-        databaseService.saveServer(serverToUpdate);
+        try{
+            commandsForUpdate.remove(commandForDelete.getId());
+            databaseService.saveServer(serverToUpdate);
 
-        //other servers to find commands that are still be in use
-        ArrayList<Server> otherServers = (ArrayList<Server>) databaseService.getAllServers();
-        otherServers.remove(serverToUpdate);
-        boolean deleteDecision = true;
-        serverSearch: for(Server server : otherServers){
-            for (String commandsInUse : server.getActiveCommandIdsList()){
-                //if command still in use - stop search and change delete decision
-                if(commandForDelete.equals(commandsInUse)){
-                    deleteDecision = false;
-                    break serverSearch;
+            //other servers to find commands that are still be in use
+            ArrayList<Server> otherServers = (ArrayList<Server>) databaseService.getAllServers();
+            otherServers.remove(serverToUpdate);
+            boolean deleteDecision = true;
+            serverSearch: for(Server server : otherServers){
+                for (String commandsInUse : server.getActiveCommandIdsList()){
+                    //if command still in use - stop search and change delete decision
+                    if(commandForDelete.equals(commandsInUse)){
+                        deleteDecision = false;
+                        break serverSearch;
+                    }
                 }
             }
+            messagingServises.sendBasicDiscordMessage("No posts about "
+                    + commandForDelete.getLiteralValue() + " anymore! Yey! (◕‿◕)",messageCreateEvent.getChannel());
+            //delete command if it became useless
+            if(deleteDecision){
+                databaseService.deleteActiveCommand(commandForDelete);
+            }
+        } catch (Exception e){
+            messagingServises.sendBasicDiscordMessage("I'm already know nothing about id " + messageValue + "!",messageCreateEvent.getChannel());
         }
-        messagingServises.sendBasicDiscordMessage("No posts about "
-                + commandForDelete.getLiteralValue() + " anymore! Yey! (◕‿◕)",messageCreateEvent.getChannel());
-        //delete command if it became useless
-        if(deleteDecision){
-            databaseService.deleteActiveCommand(commandForDelete);
-        }
+
 
         /*else messagingServises.sendBasicDiscordMessage("You wrote wrong yours server id. True id is " + serverId + "." +
                         "\nBut be sure what are you doing,all server settings will be gone!.."

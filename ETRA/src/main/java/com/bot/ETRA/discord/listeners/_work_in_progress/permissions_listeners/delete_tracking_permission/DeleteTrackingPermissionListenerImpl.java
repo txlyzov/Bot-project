@@ -21,19 +21,19 @@ public class DeleteTrackingPermissionListenerImpl implements DeleteTrackingPermi
     @Override
     public void onMessageCreate(MessageCreateEvent messageCreateEvent) {
         String messageContent = messageCreateEvent.getMessageContent();
-        Matcher correctMatcher = Pattern.compile("^`DeleteTrackingPermissionListener ((true)|(false))$").matcher(messageContent);
+        Matcher correctMatcher = Pattern.compile("^`DTP ((true)|(false))$").matcher(messageContent);
         while (correctMatcher.find()) {
             if(!messageCreateEvent.getMessageAuthor().isServerAdmin()){
                 messageCreateEvent.getChannel().sendMessage("**(!)** This command able only for \\`Server Admins\\`." +
                         "\n*Talk with them if you need that.*");
             } else {
                 String messageValue = messageContent.substring(correctMatcher.start(), correctMatcher.end())
-                        .substring(34);
+                        .substring(5);
                 long serverId = messageCreateEvent.getServer().get().getId();
                 Server server = databaseService.findByServerId(serverId);
                 server.getServerSettings().getEveryoneCommandsPermissions().setDeleteTrackingCommandPermission(Boolean.parseBoolean(messageValue));
                 databaseService.saveServer(server);
-                messageCreateEvent.getChannel().sendMessage("DeleteTrackingPermissionListener " + messageValue);
+                messageCreateEvent.getChannel().sendMessage("DTP " + messageValue);
             }
 
         }

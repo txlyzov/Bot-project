@@ -130,8 +130,8 @@ public class ZKBWebSocket extends TextWebSocketHandler {
 
         this.webSocketSession = new StandardWebSocketClient().doHandshake(this, new WebSocketHttpHeaders(),
                 URI.create(ZKB_WEBSOCKET_LINK_URI)).get();
-        this.webSocketSession.sendMessage(new TextMessage(WEBSOCKET_FOLLOW_MESSAGE_KILLSTREAM));
-        this.webSocketSession.sendMessage(new TextMessage(WEBSOCKET_FOLLOW_MESSAGE_PUBLIC));
+        /*this.webSocketSession.sendMessage(new TextMessage(WEBSOCKET_FOLLOW_MESSAGE_KILLSTREAM));
+        this.webSocketSession.sendMessage(new TextMessage(WEBSOCKET_FOLLOW_MESSAGE_PUBLIC));*/
 
     }
 
@@ -617,7 +617,7 @@ public class ZKBWebSocket extends TextWebSocketHandler {
                 ||(trackedAttackingCorporations.size()!=0)
                 ||(trackedAttackingCharacters.size()!=0)){
             description +="\n";
-            description+="Tracked attackers:";
+            description+="Observed attackers:";
             if(trackedAttackingAlliances.size()!=0)
                 for (ActiveCommand attacker : trackedAttackingAlliances){
                     description +="\n";
@@ -646,7 +646,7 @@ public class ZKBWebSocket extends TextWebSocketHandler {
                 ||(trackedKilledCorporation!=null)
                 ||(trackedKilledCharacter!=null)){
             description +="\n";
-            description +="Tracked destroyed:";
+            description +="Observed destroyed:";
             if(trackedKilledAlliance != null)
                 description += "\n" + descriptionEntity(trackedKilledAlliance);
             if(trackedKilledCorporation != null)

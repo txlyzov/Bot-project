@@ -21,19 +21,19 @@ public class SetPostTypeListenerImpl implements SetPostTypeListener{
     @Override
     public void onMessageCreate(MessageCreateEvent messageCreateEvent) {
         String messageContent = messageCreateEvent.getMessageContent();
-        Matcher correctMatcher = Pattern.compile("^`SetPostType ((rebuilt)|(simple))$").matcher(messageContent);
+        Matcher correctMatcher = Pattern.compile("^`SPT ((rebuilt)|(simple))$").matcher(messageContent);
         while (correctMatcher.find()) {
             if(!messageCreateEvent.getMessageAuthor().isServerAdmin()){
                 messageCreateEvent.getChannel().sendMessage("**(!)** This command able only for \\`Server Admins\\`." +
                         "\n*Talk with them if you need that.*");
             } else {
                 String messageValue = messageContent.substring(correctMatcher.start(), correctMatcher.end())
-                        .substring(18);
+                        .substring(5);
                 long serverId = messageCreateEvent.getServer().get().getId();
                 Server server = databaseService.findByServerId(serverId);
                 server.getServerSettings().getPostsSettings().setPostsType(messageValue);
                 databaseService.saveServer(server);
-                messageCreateEvent.getChannel().sendMessage("SetPostType " + messageValue);
+                messageCreateEvent.getChannel().sendMessage("SPT " + messageValue);
             }
         }
     }
