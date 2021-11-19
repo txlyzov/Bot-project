@@ -11,7 +11,8 @@ background-color: #fff5ee;
 
 #helpCommandsSec h5:hover,#helpWIPCommandsSec h5:hover{
   color: #FF0000;
-  cursor: pointer;
+ /* cursor: pointer;*/
+  cursor: default;
 }
 
 .bt {
