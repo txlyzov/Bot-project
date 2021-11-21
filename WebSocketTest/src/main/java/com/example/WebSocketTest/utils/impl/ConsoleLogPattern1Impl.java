@@ -65,7 +65,7 @@ public class ConsoleLogPattern1Impl implements ConsoleLogPattern {
                     "\nTotal session reconnects: " + sessionReconnects +
                     "\nTotal kills: " +
                     totalKills +
-                    "\nHoping this code was useful to you. Bye bye ^^/");
+                    "\nHope this code was useful to you. Bye bye ^^/");
         printDelimiter();
     }
 }

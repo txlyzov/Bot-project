@@ -52,7 +52,7 @@ public class ZKBWebSocketsServicesImpl implements ZKBWebSocketsServices {
             switch (sessionReconnects) {
                 case 0 -> {
                 }
-                default -> clu.printWithBottomDelimiter("Yey,fixed!^^ New connection established." +
+                default -> clu.printWithBottomDelimiter("Yey,fixed! New connection established." +
                         "\nBut we lost messages between " +
                         clu.getStringDate(connectionLostDate) + " and " + clu.getStringDate(LocalDateTime.now()) + "..");
             }
@@ -62,51 +62,17 @@ public class ZKBWebSocketsServicesImpl implements ZKBWebSocketsServices {
             switch (sessionReconnects) {
                 case 0 -> {
                     clu.printString("Well..we didn't get ZKB WebSocket connection. Reason shown above^^" +
-                            "\nWe need to wait a little and try again..Stupid connections!");
+                            "\nWe need to wait a little and try again.");
                     Thread.sleep(WS_CONNECTION_RETRY_CYCLE_TIME / 6);
                 }
                 default -> {
                     clu.printString("Well..it doesn't solved yet. Reason shown above^^" +
-                            "\nWe need to wait a little and try again..Stupid connections!");
+                            "\nWe need to wait a little and try again.");
                     Thread.sleep(WS_CONNECTION_RETRY_CYCLE_TIME);
                 }
             }
         }
     }
-
-//    @SneakyThrows
-//    public void connectionExceptions(){
-//        LocalDateTime connectionLostDate = null;
-//        if(webSocketSession!=null){
-//            connectionLostDate = webSocketSession.getConnectionLostDate();
-//        }
-//        try {
-//            this.webSocketSession =  new ZKBWebSocket(clu);
-//            switch (sessionReconnects) {
-//                case 0 -> {
-//                    sessionReconnects++;
-//                }
-//                default -> clu.printWithBottomDelimiter("Yey,fixed!^^ New connection established." +
-//                        "\nBut we lost messages between " +
-//                        //clu.getStringDate(lastMessageTime) + " and " + clu.getStringDate(LocalDateTime.now()) + "..");
-//                        clu.getStringDate(connectionLostDate) + " and " + clu.getStringDate(LocalDateTime.now()) + "..");
-//            }
-//        } catch (Exception e){
-//            e.printStackTrace();
-//            switch (sessionReconnects) {
-//                case 0 -> {
-//                    clu.printString("Well..we didn't get ZKB WebSocket connection. Reason shown above^^" +
-//                            "\nWe need to wait a little and try again..Stupid connections!");
-//                    Thread.sleep(WS_CONNECTION_RETRY_CYCLE_TIME / 6);
-//                }
-//                default -> {
-//                    clu.printString("Well..it doesn't solved yet. Reason shown above^^" +
-//                            "\nWe need to wait a little and try again..Stupid connections!");
-//                    Thread.sleep(WS_CONNECTION_RETRY_CYCLE_TIME);
-//                }
-//            }
-//        }
-//    }
 
     public void closeWebSocketConnection(){
         this.webSocketSession.disconnect();
@@ -145,9 +111,8 @@ public class ZKBWebSocketsServicesImpl implements ZKBWebSocketsServices {
 
                     Thread.sleep(OPTIMIZED_LOGS_TIMER_RESTART_CYCLE_TIME);
 
-                    clu.printWithDelimiters("Timer service time ^^ " +
-                                            "Last timer did his " + OPTIMIZED_LOGS_TIMER_RESTART_CYCLE_TIME/60000 + " min cycle successfully,yey :)\n" +
-                                            "So we will delete it,HAHA! And make a new one ^^.");
+                    clu.printWithDelimiters("Timer service time! " +
+                                            "Last timer did his " + OPTIMIZED_LOGS_TIMER_RESTART_CYCLE_TIME/60000 + " min cycle successfully.");
 
                     webSocketOptimizedLogsTimer.cancel();
                     webSocketOptimizedLogsTimer.purge();
@@ -167,7 +132,7 @@ public class ZKBWebSocketsServicesImpl implements ZKBWebSocketsServices {
                 while (true){
                     Thread.sleep(WS_CONNECTIONS_CHECK_CYCLE_TIME);
                     if (!webSocketSession.getWebSocketSession().isOpen()){
-                        clu.printWithUpperDelimiter("ZKB WebSocket is probably dead again...fe.\n" +
+                        clu.printWithUpperDelimiter("ZKB WebSocket is probably dead again.\n" +
                                                 "Trying to restart WebSocket session.");
                         totalKills = totalKills + webSocketSession.getKillsCounter(); //2
                         closeWebSocketConnection();

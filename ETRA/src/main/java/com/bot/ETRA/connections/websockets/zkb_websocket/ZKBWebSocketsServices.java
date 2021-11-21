@@ -40,8 +40,6 @@ public class ZKBWebSocketsServices {
     @Autowired
     @Qualifier(CONSOLE_DEBUGS_FILE)
     private ConsoleDebugs CD;
-    /*@Autowired
-    private ConsoleDebugs1Impl CD;*/
     @Autowired
     DiscordApiValue discordApiValue;
     @Autowired

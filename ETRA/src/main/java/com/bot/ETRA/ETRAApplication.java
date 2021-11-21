@@ -39,8 +39,6 @@ public class ETRAApplication {
 	@Autowired
 	@Qualifier(CONSOLE_DEBUGS_FILE)
 	private ConsoleDebugs CD;
-	/*@Autowired
-	private ConsoleDebugs1Impl CD;*/
 	@Autowired
 	private ZKBWebSocketsServices zkbWebSocketsServices;
 

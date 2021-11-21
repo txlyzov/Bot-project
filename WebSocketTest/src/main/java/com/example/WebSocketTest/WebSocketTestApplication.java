@@ -24,45 +24,6 @@ public class WebSocketTestApplication{
 	@Qualifier("ZKBWebSocketsServicesImpl")
 	private  ZKBWebSocketsServices  webSocketsServices;// = new ZKBWebSocketsServicesImpl(CLP);
 
-//	@SneakyThrows
-//	@ConfigurationProperties("classpath:com.example.WebSocketTest")
-//	public static void main(String[] args){
-//
-//		SpringApplication.run(WebSocketTestApplication.class, args);
-//		CLP.printDelimiter();
-//		CLP.printString("Hey! App is starting,wait a sec ^^\n" +
-//						"Its needs to establish connections with services for its full functionality.\n" +
-//						"Connecting to ZKB..");
-//
-//		//ZKBWebSocketsServicesImpl webSocketsServices = new ZKBWebSocketsServicesImpl(CLP);
-//		webSocketsServices.startWebSocketConnection();
-//
-//		CLP.printString("Someday probably this string will contains \"Connecting to EVEMarket\",but not now.\n" +
-//						"Meh..ambitious and lazy programmers..");
-//
-//
-//		CLP.printString("Application launched successfully ^^" +
-//				"\nAll needed connections are established. Have fun!");
-//		CLP.printDelimiter();
-//
-//
-//		while (true){
-//			if (LocalDateTime.now().getSecond()%15 == 0) {
-//				break;
-//			}
-//		}
-//
-//		webSocketsServices.webSocketConnectionsService();
-//		webSocketsServices.logsTimerService();
-//
-//		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-//			public void run() {
-//				//webSocketsServices.closeWebSocketConnection();
-//				CLP.printResults(LAUNCHING_TIME,webSocketsServices.getSessionReconnects(),webSocketsServices.getTotalKills()+webSocketsServices.getWebSocketSession().getKillsCounter());
-//			}
-//		}));
-//	}
-
 	public static void main(String[] args) {
 		SpringApplication.run(WebSocketTestApplication.class, args);
 	}
@@ -71,18 +32,15 @@ public class WebSocketTestApplication{
 	//ConfigurationProperties("classpath:com.example.WebSocketTest")
 	public void app1(){
 		CLP.printDelimiter();
-		CLP.printString("Hey! App is starting,wait a sec ^^\n" +
+		CLP.printString("Hey! App is starting,wait a sec.\n" +
 				"Its needs to establish connections with services for its full functionality.\n" +
 				"Connecting to ZKB..");
 
 		//ZKBWebSocketsServicesImpl webSocketsServices = new ZKBWebSocketsServicesImpl(CLP);
 		webSocketsServices.startWebSocketConnection();
 
-		CLP.printString("Someday probably this string will contains \"Connecting to EVEMarket\",but not now.\n" +
-				"Meh..ambitious and lazy programmers..");
 
-
-		CLP.printString("Application launched successfully ^^" +
+		CLP.printString("Application launched successfully." +
 				"\nAll needed connections are established. Have fun!");
 		CLP.printDelimiter();
 
