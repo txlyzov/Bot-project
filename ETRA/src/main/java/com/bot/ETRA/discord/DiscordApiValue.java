@@ -1,8 +1,8 @@
 package com.bot.ETRA.discord;
 
-import com.bot.ETRA.discord.listeners._work_in_progress.permissions_listeners.add_tracking_permission.AddTrackingPermissionListener;
-import com.bot.ETRA.discord.listeners._work_in_progress.permissions_listeners.delete_tracking_permission.DeleteTrackingPermissionListener;
-import com.bot.ETRA.discord.listeners._work_in_progress.permissions_listeners.reset_server_settings_permission.ResetServerSettingsPermissionListener;
+import com.bot.ETRA.discord.listeners._work_in_progress.permissions_listeners.add_tracking_permission.AddTrackingPermListener;
+import com.bot.ETRA.discord.listeners._work_in_progress.permissions_listeners.delete_tracking_permission.DeleteTrackingPermListener;
+import com.bot.ETRA.discord.listeners._work_in_progress.permissions_listeners.reset_server_settings_permission.ResetServerSettingsPermListener;
 import com.bot.ETRA.discord.listeners._work_in_progress.posts_settings_listeners.set_post_color.SetPostColorPatternListener;
 import com.bot.ETRA.discord.listeners._work_in_progress.posts_settings_listeners.set_post_type.SetPostTypeListener;
 import com.bot.ETRA.discord.listeners._work_in_progress.posts_settings_listeners.set_posts_enabling.SetPostsEnablingListener;
@@ -41,11 +41,11 @@ public class DiscordApiValue {
 
     //WIP features
     @Autowired
-    private AddTrackingPermissionListener addTrackingPermissionListener;
+    private AddTrackingPermListener addTrackingPermListener;
     @Autowired
-    private DeleteTrackingPermissionListener deleteTrackingPermissionListener;
+    private DeleteTrackingPermListener deleteTrackingPermListener;
     @Autowired
-    private ResetServerSettingsPermissionListener resetServerSettingsPermissionListener;
+    private ResetServerSettingsPermListener resetServerSettingsPermListener;
     @Autowired
     private SetPostColorPatternListener setPostColorPatternListener;
     @Autowired
@@ -74,9 +74,9 @@ public class DiscordApiValue {
     }
 
     public void addWIPFeatures(){
-        api.addMessageCreateListener(addTrackingPermissionListener);
-        api.addMessageCreateListener(deleteTrackingPermissionListener);
-        api.addMessageCreateListener(resetServerSettingsPermissionListener);
+        api.addMessageCreateListener(addTrackingPermListener);
+        api.addMessageCreateListener(deleteTrackingPermListener);
+        api.addMessageCreateListener(resetServerSettingsPermListener);
         api.addMessageCreateListener(setPostColorPatternListener);
         api.addMessageCreateListener(setPostTypeListener);
         api.addMessageCreateListener(setPostsEnablingListener);

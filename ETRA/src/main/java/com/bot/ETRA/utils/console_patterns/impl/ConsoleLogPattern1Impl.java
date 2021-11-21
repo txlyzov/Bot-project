@@ -60,12 +60,11 @@ public class ConsoleLogPattern1Impl implements ConsoleLogPattern {
     @Override
     public void printZKBWebSocketResults(LocalDateTime launchingTime, int sessionReconnects, int totalKills){
         printDelimiter();
-        printString("Ooookay, stopping it! Program is out. Little results report:" +
+        printString("Program is out. Little results report:" +
                     "\nLaunching date: " + getStringDate(launchingTime) + " " +
                     "\nTotal session reconnects: " + sessionReconnects +
                     "\nTotal kills: " +
-                    totalKills +
-                    "\nHoping this code was useful to you. Bye bye ^^/");
+                    totalKills);
         printDelimiter();
     }
 }

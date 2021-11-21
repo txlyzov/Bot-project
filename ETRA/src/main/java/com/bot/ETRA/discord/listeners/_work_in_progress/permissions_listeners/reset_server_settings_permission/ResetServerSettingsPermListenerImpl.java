@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
-public class ResetServerSettingsPermissionListenerImpl implements ResetServerSettingsPermissionListener{
+public class ResetServerSettingsPermListenerImpl implements ResetServerSettingsPermListener {
     @Autowired
     private DatabaseService databaseService;
 

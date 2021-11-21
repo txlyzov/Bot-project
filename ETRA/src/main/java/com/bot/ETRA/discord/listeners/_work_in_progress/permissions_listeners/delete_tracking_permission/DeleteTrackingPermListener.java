@@ -2,5 +2,5 @@ package com.bot.ETRA.discord.listeners._work_in_progress.permissions_listeners.d
 
 import org.javacord.api.listener.message.MessageCreateListener;
 
-public interface DeleteTrackingPermissionListener extends MessageCreateListener {
+public interface DeleteTrackingPermListener extends MessageCreateListener {
 }

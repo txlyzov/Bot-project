@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
-public class AddTrackingPermissionListenerImpl implements AddTrackingPermissionListener{
+public class AddTrackingPermListenerImpl implements AddTrackingPermListener {
     @Autowired
     private DatabaseService databaseService;
 

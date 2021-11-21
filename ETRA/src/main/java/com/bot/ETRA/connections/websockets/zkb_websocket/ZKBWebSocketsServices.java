@@ -11,6 +11,7 @@ import com.bot.ETRA.utils.debugs.ConsoleDebugs;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ public class ZKBWebSocketsServices {
     private static final int WS_CONNECTION_RETRY_CYCLE_TIME = 29950; // = ~29,95 sec = 29950 millis
     private static final int OPTIMIZED_LOGS_TIMER_RESTART_CYCLE_TIME = 3599950; // = ~60 min = 3599900 millis
     private static final int OPTIMIZED_LOGS_TIMER_PERIOD_CYCLE_TIME = 14950; // = 14.95 sec = 14950 millis
+    private static final String CONSOLE_DEBUGS_FILE = "consoleDebugs1Impl";
 
     @Getter
     private ZKBWebSocket webSocketSession;
@@ -36,7 +38,10 @@ public class ZKBWebSocketsServices {
 
 
     @Autowired
+    @Qualifier(CONSOLE_DEBUGS_FILE)
     private ConsoleDebugs CD;
+    /*@Autowired
+    private ConsoleDebugs1Impl CD;*/
     @Autowired
     DiscordApiValue discordApiValue;
     @Autowired
