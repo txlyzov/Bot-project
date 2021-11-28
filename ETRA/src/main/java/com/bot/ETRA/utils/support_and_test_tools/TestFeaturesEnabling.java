@@ -17,6 +17,7 @@ public class TestFeaturesEnabling {
     @Autowired
     private DatabaseChanging databaseChanging;
 
+    //connecting test features
     public void testFeaturesEnabling(){
         //discordApiValue.getApi().addMessageCreateListener(testListener);
         //databaseChanging.changeDatabase();

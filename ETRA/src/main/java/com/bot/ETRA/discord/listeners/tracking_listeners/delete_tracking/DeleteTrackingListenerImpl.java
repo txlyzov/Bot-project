@@ -41,20 +41,24 @@ public class DeleteTrackingListenerImpl implements DeleteTrackingListener {
         //If command correct
         Matcher correctMatcher = Pattern.compile("^`untrack \\d{7,12}$").matcher(messageContent);
         while (correctMatcher.find()) {
+
             //check user permission
             if ((databaseService.findByServerId(messageCreateEvent.getServer().get().getId()).getServerSettings()
                     .getEveryoneCommandsPermissions().isDeleteTrackingCommandPermission())
                     ||(messageCreateEvent.getMessageAuthor().isServerAdmin())){
                 ifCorrectMatcherFound(messageCreateEvent,messageContent.substring(correctMatcher.start(), correctMatcher.end()).substring(9));
                 isCorrectCommand = true;
+
                 //regular users can't do it,warning
             } else warningMessage(messageCreateEvent);
+
         }
 
         //Incorrect command prompt
         if(!isCorrectCommand){
             Matcher probablyMatcher = Pattern.compile("^`untrack(\\s.{0,20})?$").matcher(messageContent);
             while (probablyMatcher.find()) {
+
                 //check user permission
                 if ((databaseService.findByServerId(messageCreateEvent.getServer().get().getId()).getServerSettings()
                         .getEveryoneCommandsPermissions().isDeleteTrackingCommandPermission())
@@ -63,8 +67,10 @@ public class DeleteTrackingListenerImpl implements DeleteTrackingListener {
                                     "If you trying for it - check your input." +
                                     "\nExample - \\`untrack 1234567"
                             ,messageCreateEvent.getChannel());
+
                     //regular users can't do it,warning
                 } else warningMessage(messageCreateEvent);
+
             }
         }
     }
@@ -88,9 +94,11 @@ public class DeleteTrackingListenerImpl implements DeleteTrackingListener {
 
         //server for updating
         Server serverToUpdate = databaseService.findByServerId(serverId);
+
         //list for updating
         ArrayList<String> commandsForUpdate = (ArrayList<String>) serverToUpdate.getActiveCommandIdsList();
         ActiveCommand commandForDelete = databaseService.findActiveCommandByNumericalValue(messageValue);
+
         try{
             commandsForUpdate.remove(commandForDelete.getId());
             databaseService.saveServer(serverToUpdate);
@@ -99,8 +107,10 @@ public class DeleteTrackingListenerImpl implements DeleteTrackingListener {
             ArrayList<Server> otherServers = (ArrayList<Server>) databaseService.getAllServers();
             otherServers.remove(serverToUpdate);
             boolean deleteDecision = true;
+
             serverSearch: for(Server server : otherServers){
                 for (String commandsInUse : server.getActiveCommandIdsList()){
+
                     //if command still in use - stop search and change delete decision
                     if(commandForDelete.equals(commandsInUse)){
                         deleteDecision = false;
@@ -108,19 +118,17 @@ public class DeleteTrackingListenerImpl implements DeleteTrackingListener {
                     }
                 }
             }
+
             messagingServises.sendBasicDiscordMessage("No posts about "
                     + commandForDelete.getLiteralValue() + " anymore! Yey! (◕‿◕)",messageCreateEvent.getChannel());
+
             //delete command if it became useless
             if(deleteDecision){
                 databaseService.deleteActiveCommand(commandForDelete);
             }
+
         } catch (Exception e){
             messagingServises.sendBasicDiscordMessage("I'm already know nothing about id " + messageValue + "!",messageCreateEvent.getChannel());
         }
-
-
-        /*else messagingServises.sendBasicDiscordMessage("You wrote wrong yours server id. True id is " + serverId + "." +
-                        "\nBut be sure what are you doing,all server settings will be gone!.."
-                ,messageCreateEvent.getChannel());*/
     }
 }

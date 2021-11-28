@@ -56,7 +56,13 @@ public class ConsoleDebugs1Impl implements ConsoleDebugs {
     public void evaApplicationConsoleDebugFinish11(LocalDateTime launchingTime, ZKBWebSocketsServices webSocketsServices){
         if(EVAAPPLICATION_DEBUG_MESSAGES_INTO_CONSOLE||
                 ALL_DEBUG_MESSAGES_INTO_CONSOLE){
-            CLP.printZKBWebSocketResults(launchingTime,webSocketsServices.getSessionReconnects(),webSocketsServices.getWebSocketSession().getKillsCounter());
+            CLP.printDelimiter();
+            CLP.printString("Program is out. Little results report:" +
+                    "\nLaunching date: " + CLP.getStringDate(launchingTime) + " " +
+                    "\nTotal session reconnects: " + webSocketsServices.getSessionReconnects() +
+                    "\nTotal kills: " +
+                    webSocketsServices.getWebSocketSession().getKillsCounter());
+            CLP.printDelimiter();
         }
     }
 

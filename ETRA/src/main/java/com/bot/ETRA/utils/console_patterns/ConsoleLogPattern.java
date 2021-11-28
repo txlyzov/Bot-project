@@ -10,5 +10,4 @@ public interface ConsoleLogPattern {
     void printWithUpperDelimiter(String content);
     void printWithDelimiters(String content);
     void printWithBottomDelimiter(String content);
-    void printZKBWebSocketResults(LocalDateTime launchingTime, int sessionReconnects, int totalKills);
 }

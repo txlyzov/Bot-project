@@ -31,8 +31,10 @@ public class ResetServerSettingsPermListenerImpl implements ResetServerSettingsP
                         .substring(6);
                 long serverId = messageCreateEvent.getServer().get().getId();
                 Server server = databaseService.findByServerId(serverId);
+
                 server.getServerSettings().getEveryoneCommandsPermissions().setResetServerSettingsPermission(Boolean.parseBoolean(messageValue));
                 databaseService.saveServer(server);
+
                 messageCreateEvent.getChannel().sendMessage("RSSP " + messageValue);
             }
 

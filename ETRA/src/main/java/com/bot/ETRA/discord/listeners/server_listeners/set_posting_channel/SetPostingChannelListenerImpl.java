@@ -21,16 +21,20 @@ public class SetPostingChannelListenerImpl implements SetPostingChannelListener{
             if(!messageCreateEvent.getMessageAuthor().isServerAdmin()){
                 messageCreateEvent.getChannel().sendMessage("**(!)** This command able only for \\`Server Admins\\`." +
                         "\n*Talk with them if you need that.*");
-            } else {
+            }
+
+            else {
                 long serverId = messageCreateEvent.getServer().get().getId();
                 long channelId = messageCreateEvent.getChannel().getId();
                 Server server = databaseService.findByServerId(serverId);
+
                 if (server != null) {
                     server.setChannelId(channelId);
                     databaseService.saveServer(server);
                 } else {
                     databaseService.saveServer(new Server(serverId,channelId,new ArrayList<>()));
                 }
+
                 messageCreateEvent.getChannel().sendMessage("Oookay,now all posts will be sent here. (￢ ￢)");
             }
         }

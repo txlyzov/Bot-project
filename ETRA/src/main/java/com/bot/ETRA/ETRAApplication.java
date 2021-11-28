@@ -6,7 +6,6 @@ import com.bot.ETRA.discord.DiscordApiValue;
 import com.bot.ETRA.connections.websockets.zkb_websocket.ZKBWebSocketsServices;
 import com.bot.ETRA.utils.debugs.ConsoleDebugs;
 import com.bot.ETRA.utils.support_and_test_tools.TestFeaturesEnabling;
-import com.bot.ETRA.utils.debugs.impl.ConsoleDebugs1Impl;
 import lombok.SneakyThrows;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
@@ -23,6 +22,11 @@ import java.time.LocalDateTime;
 @SpringBootApplication
 public class ETRAApplication {
 
+	private static final LocalDateTime LAUNCHING_TIME = LocalDateTime.now();
+	private static final boolean LAUNCHING_DELAY = false;
+	private static final String CONSOLE_DEBUGS_FILE = "consoleDebugs1Impl";
+
+
 	@Autowired
 	private TestFeaturesEnabling testFeaturesEnabling;
 	@Autowired
@@ -30,12 +34,6 @@ public class ETRAApplication {
 	@Autowired
 	private Environment env;
 
-
-
-	private static final LocalDateTime LAUNCHING_TIME = LocalDateTime.now();
-	private static final boolean DEBUG_MESSAGES_INTO_CONSOLE = true;
-	private static final boolean NICE_TIME_OUTPUT = false;
-	private static final String CONSOLE_DEBUGS_FILE = "consoleDebugs1Impl";
 	@Autowired
 	@Qualifier(CONSOLE_DEBUGS_FILE)
 	private ConsoleDebugs CD;
@@ -72,7 +70,7 @@ public class ETRAApplication {
 
 
 
-		/*if(NICE_TIME_OUTPUT){
+		/*if(LAUNCHING_DELAY){
 			while (true){
 				if (LocalDateTime.now().getSecond()%15 == 0) {
 					break;

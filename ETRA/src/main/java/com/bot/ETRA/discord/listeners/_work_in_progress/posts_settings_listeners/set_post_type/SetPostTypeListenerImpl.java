@@ -31,8 +31,10 @@ public class SetPostTypeListenerImpl implements SetPostTypeListener{
                         .substring(5);
                 long serverId = messageCreateEvent.getServer().get().getId();
                 Server server = databaseService.findByServerId(serverId);
+
                 server.getServerSettings().getPostsSettings().setPostsType(messageValue);
                 databaseService.saveServer(server);
+
                 messageCreateEvent.getChannel().sendMessage("SPT " + messageValue);
             }
         }

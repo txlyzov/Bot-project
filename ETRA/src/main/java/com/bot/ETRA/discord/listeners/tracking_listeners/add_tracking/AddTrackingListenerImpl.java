@@ -38,12 +38,14 @@ public class AddTrackingListenerImpl implements AddTrackingListener {
         //If command correct
         Matcher correctMatcher = Pattern.compile("^`tr \\d{7,12}$").matcher(messageContent);
         while (correctMatcher.find()) {
+
             //check user permission
             if ((databaseService.findByServerId(messageCreateEvent.getServer().get().getId()).getServerSettings()
                     .getEveryoneCommandsPermissions().isAddTrackingCommandPermission())
                     ||(messageCreateEvent.getMessageAuthor().isServerAdmin())){
                 ifCorrectMatcherFound(messageCreateEvent,messageContent.substring(correctMatcher.start(), correctMatcher.end()).substring(4));
                 isCorrectCommand = true;
+
                 //regular users can't do it,warning
             } else warningMessage(messageCreateEvent);
         }
@@ -52,11 +54,13 @@ public class AddTrackingListenerImpl implements AddTrackingListener {
         if(!isCorrectCommand){
             Matcher probablyMatcher = Pattern.compile("^`tr(\\s.{0,20})?$").matcher(messageContent);
             while (probablyMatcher.find()) {
+
                 //check user permission
                 if ((databaseService.findByServerId(messageCreateEvent.getServer().get().getId()).getServerSettings()
                         .getEveryoneCommandsPermissions().isAddTrackingCommandPermission())
                         ||(messageCreateEvent.getMessageAuthor().isServerAdmin())){
                     ifProbablyMatcherFound(messageCreateEvent);
+
                     //regular users can't do it,warning
                 } else warningMessage(messageCreateEvent);
 
@@ -90,16 +94,21 @@ public class AddTrackingListenerImpl implements AddTrackingListener {
             if(server!=null){
                 for(String serverCommand : server.getActiveCommandIdsList()){
                     if (command.getId().equals(serverCommand)){
+
                         //Already tracking
                         messagingServises.sendBasicDiscordMessage("Already tracking (⌐■_■)",messageCreateEvent.getChannel());
                     }
                 }
             }
+
             //Start tracking
             ifNotFoundByNumericalValue(messageCreateEvent,serverId,channelId,messageValue,true);
+
         } else {
+
             //Start tracking
             ifNotFoundByNumericalValue(messageCreateEvent,serverId,channelId,messageValue,
+
                     //Add ActiveCommand record
                     commandTypeDefining(messageValue,messageCreateEvent));
         }
@@ -113,6 +122,7 @@ public class AddTrackingListenerImpl implements AddTrackingListener {
         if (startTracking){
             Server server = databaseService.findByServerId(serverId);
             ActiveCommand command = databaseService.findActiveCommandByNumericalValue(messageValue);
+
             //Server exists in database
             if (server != null) {
                 server.addActiveCommand(command.getId());
@@ -122,6 +132,7 @@ public class AddTrackingListenerImpl implements AddTrackingListener {
                         "No one/Nothing will be unnoticed (almost). " +
                         "\n(￣^￣)ゞ (⌐■_■)",messageCreateEvent.getChannel());
             }
+
             //Server not exists in database
             else {
                 ArrayList<String> commandsList = new ArrayList<>();
@@ -137,8 +148,9 @@ public class AddTrackingListenerImpl implements AddTrackingListener {
 
     }
 
-    //Definition of command type & adding in database
+    //Definition of command type(alliance\character\corporation\null) & adding in database
     private boolean commandTypeDefining(String messageValue,MessageCreateEvent messageCreateEvent){
+
         //Alliance name global search (disable it for antispam and saving resources)
         String allianceName = esiEvetechApi.getAllianceName(messageValue);
         if (!allianceName.equals("objectNotFoundException")){
@@ -152,9 +164,11 @@ public class AddTrackingListenerImpl implements AddTrackingListener {
             databaseService.saveActiveCommand(new ActiveCommand("Tracking character",messageValue,characterName));
             return true;
         }
+
         //Corporation name global search
         String corporationName = esiEvetechApi.getCorporationName(messageValue);
         if (!corporationName.equals("objectNotFoundException")) {
+
             //NPC corporation check (banned for antispam and saving resources)
             for (Object NPSCorporationId : esiEvetechApi.getNPSCorporationsIds()){
                 if (NPSCorporationId.toString().equals(messageValue)){
@@ -166,12 +180,14 @@ public class AddTrackingListenerImpl implements AddTrackingListener {
             databaseService.saveActiveCommand(new ActiveCommand("Tracking corporation", messageValue, corporationName));
             return true;
         }
+
         //Solar system name global search
         String solarSystemName = zkbApi.getSolarSystemName(messageValue);
         if(!solarSystemName.equals("objectNotFoundException")){
             databaseService.saveActiveCommand(new ActiveCommand("Tracking solar system",messageValue,solarSystemName));
             return true;
         }
+
         //If global api search failed
         messagingServises.sendBasicDiscordMessage("Api services cant find any info about id"
                 + messageValue + "." +

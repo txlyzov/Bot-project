@@ -16,7 +16,11 @@ public class ZKBWebsocketParser {
     public String serverServerStatusParser(String serverMessage){ return new JSONObject(serverMessage).getString("tqStatus"); }
 
     public String serverOnlineValueParser(String serverMessage){
-        return new JSONObject(serverMessage).getString("tqCount");
+        try {
+            return new JSONObject(serverMessage).getString("tqCount");
+        } catch (Exception e){
+            return "objectNotFoundException";
+        }
     }
 
 
@@ -72,15 +76,27 @@ public class ZKBWebsocketParser {
     }
 
     public String killmailKillmailIdParser(String killstreamMessage){
-        return Integer.toString(new JSONObject(killstreamMessage).getInt("killmail_id"));
+        try {
+            return Integer.toString(new JSONObject(killstreamMessage).getInt("killmail_id"));
+        } catch (Exception e){
+            return "objectNotFoundException";
+        }
     }
 
     public String killmailKillmailTimeParser(String killstreamMessage){
-        return new JSONObject(killstreamMessage).getString("killmail_time");
+        try {
+            return new JSONObject(killstreamMessage).getString("killmail_time");
+        } catch (Exception e){
+            return "objectNotFoundException";
+        }
     }
 
     public String killmailSolarSystemIdParser(String killstreamMessage){
-        return Integer.toString(new JSONObject(killstreamMessage).getInt("solar_system_id"));
+        try {
+            return Integer.toString(new JSONObject(killstreamMessage).getInt("solar_system_id"));
+        } catch (Exception e){
+            return "objectNotFoundException";
+        }
     }
 
 }

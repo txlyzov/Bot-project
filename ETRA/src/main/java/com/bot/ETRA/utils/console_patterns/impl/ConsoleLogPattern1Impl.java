@@ -27,6 +27,7 @@ public class ConsoleLogPattern1Impl implements ConsoleLogPattern {
     public String getStringDate(LocalDateTime date){
         return date.format(DateTimeFormatter.ofPattern(CONSOLE_DATE_FORMAT_PATTERN));
     }
+
     @Override
     public String getStringDateWithBrackets (LocalDateTime date){
         return "[" + date.format(DateTimeFormatter.ofPattern(CONSOLE_DATE_FORMAT_PATTERN)) + "]";
@@ -55,16 +56,5 @@ public class ConsoleLogPattern1Impl implements ConsoleLogPattern {
     public void printString(String content){
         System.out.println(getStringDateWithBrackets(LocalDateTime.now())
                            + " " + content);
-    }
-
-    @Override
-    public void printZKBWebSocketResults(LocalDateTime launchingTime, int sessionReconnects, int totalKills){
-        printDelimiter();
-        printString("Program is out. Little results report:" +
-                    "\nLaunching date: " + getStringDate(launchingTime) + " " +
-                    "\nTotal session reconnects: " + sessionReconnects +
-                    "\nTotal kills: " +
-                    totalKills);
-        printDelimiter();
     }
 }

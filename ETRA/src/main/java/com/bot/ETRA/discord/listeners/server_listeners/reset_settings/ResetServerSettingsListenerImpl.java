@@ -30,12 +30,14 @@ public class ResetServerSettingsListenerImpl implements ResetServerSettingsListe
             //If command correct
             Matcher correctMatcher = Pattern.compile("^`reset \\d{18}$").matcher(messageContent);
             while (correctMatcher.find()) {
+
                 //check user permission
                 if ((databaseService.findByServerId(messageCreateEvent.getServer().get().getId()).getServerSettings()
                         .getEveryoneCommandsPermissions().isResetServerSettingsPermission())
                         ||(messageCreateEvent.getMessageAuthor().isServerAdmin())){
                     ifCorrectMatcherFound(messageCreateEvent,messageContent.substring(correctMatcher.start(), correctMatcher.end()).substring(7));
                     isCorrectCommand = true;
+
                     //regular users can't do it,warning
                 } else warningMessage(messageCreateEvent);
             }
@@ -44,6 +46,7 @@ public class ResetServerSettingsListenerImpl implements ResetServerSettingsListe
             if(!isCorrectCommand){
                 Matcher probablyMatcher = Pattern.compile("^`reset(\\s.{0,25})?$").matcher(messageContent);
                 while (probablyMatcher.find()) {
+
                     //check user permission
                     if ((databaseService.findByServerId(messageCreateEvent.getServer().get().getId()).getServerSettings()
                             .getEveryoneCommandsPermissions().isResetServerSettingsPermission())
@@ -53,6 +56,7 @@ public class ResetServerSettingsListenerImpl implements ResetServerSettingsListe
                                         "\nBut be sure about what are you doing,all server settings will be gone!.." +
                                         "\nYours server id is " + messageCreateEvent.getServer().get().getId()
                                 ,messageCreateEvent.getChannel());
+
                         //regular users can't do it,warning
                     } else warningMessage(messageCreateEvent);
                 }
@@ -74,21 +78,26 @@ public class ResetServerSettingsListenerImpl implements ResetServerSettingsListe
 
     private void ifCorrectMatcherFound(MessageCreateEvent messageCreateEvent,String messageValue){
         long serverId = messageCreateEvent.getServer().get().getId();
+
         //compare server id as confirmation
         if(messageValue.equals(Long.toString(serverId))){
+
             //delete server from database
             Server serverToDelete = databaseService.findByServerId(serverId);
             databaseService.deleteServer(serverToDelete);
 
             //deleted server's commands,need delete them too
             ArrayList<String> commandsForDelete = (ArrayList<String>) serverToDelete.getActiveCommandIdsList();
+
             //other servers to find commands that are still be in use
             ArrayList<Server> otherServers = (ArrayList<Server>) databaseService.getAllServers();
+
             //check uses of all commands for delete
             for(String commandForDelete : commandsForDelete){
                 boolean deleteDecision = true;
                 serverSearch: for(Server server : otherServers){
                     for (String commandsInUse : server.getActiveCommandIdsList()){
+
                         //if command still in use - stop search and change delete decision
                         if(commandForDelete.equals(commandsInUse)){
                             deleteDecision = false;
@@ -96,6 +105,7 @@ public class ResetServerSettingsListenerImpl implements ResetServerSettingsListe
                         }
                     }
                 }
+
                 //delete command if it became useless
                 if(deleteDecision){
                     databaseService.deleteActiveCommand(
@@ -103,7 +113,9 @@ public class ResetServerSettingsListenerImpl implements ResetServerSettingsListe
                 }
             }
             messagingServises.sendBasicDiscordMessage("Well..i don't know this place anymore.. ╮(︶▽︶)╭",messageCreateEvent.getChannel());
-        }//server id comparing failed warning
+        }
+
+        //server id comparing failed warning
         else messagingServises.sendBasicDiscordMessage("You wrote wrong yours server id. True id is " + serverId + "." +
                         "\nBut be sure what are you doing,all server settings will be gone!.."
                 ,messageCreateEvent.getChannel());

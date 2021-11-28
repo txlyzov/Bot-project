@@ -20,14 +20,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DiscordApiValue {
-    @Getter @Setter
-    private DiscordApi api;
 
    /* @Autowired
     private Environment env;*/
 
-    //Features
+    //Discord Api value
+    @Getter @Setter
+    private DiscordApi api;
 
+    //Features
     @Autowired
     private ETRAHelpListener ETRAHelpListener;
     @Autowired

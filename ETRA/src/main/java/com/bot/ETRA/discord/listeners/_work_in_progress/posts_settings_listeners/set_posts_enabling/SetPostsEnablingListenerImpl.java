@@ -32,8 +32,10 @@ public class SetPostsEnablingListenerImpl implements SetPostsEnablingListener{
                         .substring(5);
                 long serverId = messageCreateEvent.getServer().get().getId();
                 Server server = databaseService.findByServerId(serverId);
+
                 server.getServerSettings().getPostsSettings().setShouldBePosted(Boolean.parseBoolean(messageValue));
                 databaseService.saveServer(server);
+
                 messageCreateEvent.getChannel().sendMessage("SPE " + messageValue);
             }
 

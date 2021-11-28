@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @Controller
-public class WebController implements ErrorController { //implements ErrorController need to move
+public class WebController implements ErrorController { //? "implements ErrorController" probably need to move
     @Autowired
     private DiscordApiValue discordApiValue;
     @Autowired
@@ -27,13 +27,11 @@ public class WebController implements ErrorController { //implements ErrorContro
 
     @GetMapping
     public String main(Model model){
-        model.addAttribute("someinfo","Someinfo here");
         return "main.html";
     }
 
     @RequestMapping(value = "/error")
     public String handleError() {
-        //do something like logging
         return "404";
     }
 
@@ -41,8 +39,8 @@ public class WebController implements ErrorController { //implements ErrorContro
     @RequestMapping(value = "/{serverId:\\d{18}}", method = RequestMethod.GET)
     public String getServerActiveCommandsPage(@PathVariable long serverId, ArrayList<ActiveCommand> activeCommands, Model model) {
         try {
+            //getting servers commands for displaying
             Server server = databaseService.findByServerId(serverId);
-            //ArrayList<String> commandsIds = (ArrayList<String>) server.getActiveCommandIdsList();
             server.getActiveCommandIdsList().forEach((commandId) -> {
                 activeCommands.add(databaseService.findActiveCommandById(commandId));
             });
@@ -51,6 +49,7 @@ public class WebController implements ErrorController { //implements ErrorContro
             model.addAttribute("postingChannel",discordApiValue.getApi().getChannelById(server.getChannelId()).get().toString());
             model.addAttribute("activeCommands",activeCommands);
             model.addAttribute("activeCommandsSize", activeCommands.size());
+            //in future commands could have limit per server
             model.addAttribute("activeCommandsMaxSize", "Unlimited");
             model.addAttribute("lastUpdateTime", LocalDateTime.now());
             return "ServerActiveCommandsPage";
@@ -59,32 +58,5 @@ public class WebController implements ErrorController { //implements ErrorContro
         }
 
     }
-
-
-    /*@RequestMapping(value = "/4040707UwU", method = RequestMethod.GET)//_(×﹏×)
-    public String getServersPage(Model model) {
-        ArrayList<Server> servers = (ArrayList<Server>) databaseService.getAllServers();
-
-        ArrayList<String> serversNames = new ArrayList<>();
-        for (Server server : servers){
-            serversNames.add(discordApiValue.getApi().getServerById(server.getServerId()).get().getName());
-        }
-
-        class Counter{
-            private int counter;
-            public Counter(){
-                this.counter=0;
-            }
-            public int upCounter(){
-                counter++;
-                return counter;
-            }
-        }
-
-        model.addAttribute("servers", servers);
-        model.addAttribute("serversNames", serversNames);
-        model.addAttribute("counter",new Counter());
-        return "serversPage";
-    }*/
 
 }

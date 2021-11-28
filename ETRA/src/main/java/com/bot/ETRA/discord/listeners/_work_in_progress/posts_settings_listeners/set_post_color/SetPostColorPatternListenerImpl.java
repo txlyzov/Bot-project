@@ -31,9 +31,11 @@ public class SetPostColorPatternListenerImpl implements SetPostColorPatternListe
                         .substring(6);
                 long serverId = messageCreateEvent.getServer().get().getId();
                 Server server = databaseService.findByServerId(serverId);
+
                 server.getServerSettings().getPostsSettings().setPostsColorPattern(
                                 Integer.parseInt(messageValue));
                 databaseService.saveServer(server);
+
                 messageCreateEvent.getChannel().sendMessage("SPCP " + messageValue);
             }
         }

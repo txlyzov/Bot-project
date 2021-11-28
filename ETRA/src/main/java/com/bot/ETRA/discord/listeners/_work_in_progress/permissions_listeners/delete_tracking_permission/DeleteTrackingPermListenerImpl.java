@@ -31,8 +31,10 @@ public class DeleteTrackingPermListenerImpl implements DeleteTrackingPermListene
                         .substring(5);
                 long serverId = messageCreateEvent.getServer().get().getId();
                 Server server = databaseService.findByServerId(serverId);
+
                 server.getServerSettings().getEveryoneCommandsPermissions().setDeleteTrackingCommandPermission(Boolean.parseBoolean(messageValue));
                 databaseService.saveServer(server);
+
                 messageCreateEvent.getChannel().sendMessage("DTP " + messageValue);
             }
 

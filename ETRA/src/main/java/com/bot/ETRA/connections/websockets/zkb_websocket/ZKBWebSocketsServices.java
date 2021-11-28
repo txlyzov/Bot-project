@@ -41,7 +41,7 @@ public class ZKBWebSocketsServices {
     @Qualifier(CONSOLE_DEBUGS_FILE)
     private ConsoleDebugs CD;
     @Autowired
-    DiscordApiValue discordApiValue;
+    private DiscordApiValue discordApiValue;
     @Autowired
     private ZKBWebsocketParser zkbWebsocketParser;
     @Autowired
@@ -58,7 +58,7 @@ public class ZKBWebSocketsServices {
 
 
     public ZKBWebSocketsServices(){
-        this.killsCounter =0; //2
+        this.killsCounter =0;
         this.sessionReconnects=0;
     }
 
@@ -66,6 +66,8 @@ public class ZKBWebSocketsServices {
 
 
 
+    //post info every 15 seconds
+    //and updating timer every OPTIMIZED_LOGS_TIMER_RESTART_CYCLE_TIME seconds for cleaning any lags delays
     public void logsTimerService(){
         Thread logsTimerServiceThread = new Thread(new Runnable() {
             @SneakyThrows
@@ -96,9 +98,9 @@ public class ZKBWebSocketsServices {
                     webSocketOptimizedLogsTimer.cancel();
                     webSocketOptimizedLogsTimer.purge();
                 }
-
             }
         });
+
         logsTimerServiceThread.start();
     }
 
@@ -106,6 +108,7 @@ public class ZKBWebSocketsServices {
 
 
 
+    //checking connection status every WS_CONNECTIONS_CHECK_CYCLE_TIME seconds and reconnecting
     public void webSocketConnectionsService(){
         Thread SocketConnectionsServiceThread = new Thread(new Runnable() {
             @SneakyThrows
@@ -130,10 +133,14 @@ public class ZKBWebSocketsServices {
 
     @SneakyThrows
     public void startWebSocketConnection(){
+
+        //save data from last session
         if(webSocketSession!=null){
             connectionLostDate = webSocketSession.getConnectionLostDate();
             killsCounter = webSocketSession.getKillsCounter();
         }
+
+        //try to recreate connection
         try {
             this.webSocketSession =  new ZKBWebSocket(killsCounter,CD,discordApiValue,zkbWebsocketParser,esiEvetechApi,zkbApi,databaseService,messagingServises);
             switch (sessionReconnects) {
@@ -142,6 +149,7 @@ public class ZKBWebSocketsServices {
                 default -> CD.ZKBWebSocketServicesConnection11(connectionLostDate);
             }
             sessionReconnects++;
+
         } catch (Exception e){
             e.printStackTrace();
             switch (sessionReconnects) {
